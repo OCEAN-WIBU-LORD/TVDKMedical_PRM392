@@ -98,6 +98,7 @@
                 android:layout_height="match_parent"
                 android:drawableEnd="@drawable/baseline_boy_24"
                 android:drawablePadding="8dp"
+                android:id="@+id/name"
                 android:inputType="textEmailAddress" />
             <TextView
                 android:layout_width="wrap_content"
@@ -184,7 +185,7 @@
                 android:layout_height="60dp"
                 android:text="Register"
                 app:cornerRadius="32dp"
-                android:id="@+id/resiterbtn"
+                android:id="@+id/registerbtn"
                 />
 
             <View

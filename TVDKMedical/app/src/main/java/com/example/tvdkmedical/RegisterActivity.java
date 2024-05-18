@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +39,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class RegisterActivity extends AppCompatActivity {
 
 
-    EditText editTextEmail, editTextPassword, editTextRePassword;
+    EditText editTextName,editTextEmail, editTextPassword, editTextRePassword;
     MaterialButton buttonReg;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
@@ -63,7 +64,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = findViewById(R.id.email);
-        buttonReg = findViewById(R.id.resiterbtn);
+        editTextName = findViewById(R.id.name);
+        editTextPassword = findViewById(R.id.password);
+        editTextRePassword = findViewById(R.id.re_password);
+        buttonReg = findViewById(R.id.registerbtn);
         progressBar = findViewById(R.id.progressBar);
 
         // Find the return button by its ID
@@ -84,65 +88,82 @@ public class RegisterActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Call the registerUser function
                 progressBar.setVisibility(View.VISIBLE);
-                registerUser();
+                String name = editTextName.getText().toString().trim();
+                String email = editTextEmail.getText().toString().trim();
+                String password = editTextPassword.getText().toString().trim();
+                String rePassword = editTextRePassword.getText().toString().trim();
+                // Validate the inputs
+                if (TextUtils.isEmpty(name)) {
+                    Toast.makeText(getApplicationContext(),"Name is required", Toast.LENGTH_SHORT).show();
+                    editTextName.setError("Name is required");
+                    editTextName.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(getApplicationContext(),"Email is required", Toast.LENGTH_SHORT).show();
+                    editTextEmail.setError("Email is required");
+                    editTextEmail.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(getApplicationContext(),"Please enter a valid email", Toast.LENGTH_SHORT).show();
+                    editTextEmail.setError("Please enter a valid email");
+                    editTextEmail.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (TextUtils.isEmpty(password)) {
+                    Toast.makeText(getApplicationContext(),"Password is required", Toast.LENGTH_SHORT).show();
+                    editTextPassword.setError("Password is required");
+                    editTextPassword.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (password.length() < 6) {
+                    Toast.makeText(getApplicationContext(),"Password should be at least 6 characters long", Toast.LENGTH_SHORT).show();
+                    editTextPassword.setError("Password should be at least 6 characters long");
+                    editTextPassword.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                if (!password.equals(rePassword)) {
+                    Toast.makeText(getApplicationContext(),"Passwords do not match", Toast.LENGTH_SHORT).show();
+                    editTextRePassword.setError("Passwords do not match");
+                    editTextRePassword.requestFocus();
+                    progressBar.setVisibility(View.GONE);
+                    return;
+                }
+
+                mAuth.createUserWithEmailAndPassword(email, password)
+                        .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                progressBar.setVisibility(View.GONE);
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(RegisterActivity.this, "Account Created",
+                                            Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                // Proceed with registration logic
+                // For now, we'll just display a Toast message
+                Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
             }
         });
 
-    }
-    private void registerUser() {
-        String email = editTextEmail.getText().toString().trim();
-        String password = editTextPassword.getText().toString().trim();
-        String rePassword = editTextRePassword.getText().toString().trim();
-
-        // Validate the inputs
-        if (email.isEmpty()) {
-            editTextEmail.setError("Email is required");
-            editTextEmail.requestFocus();
-            return;
-        }
-
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            editTextEmail.setError("Please enter a valid email");
-            editTextEmail.requestFocus();
-            return;
-        }
-
-        if (password.isEmpty()) {
-            editTextPassword.setError("Password is required");
-            editTextPassword.requestFocus();
-            return;
-        }
-
-        if (password.length() < 6) {
-            editTextPassword.setError("Password should be at least 6 characters long");
-            editTextPassword.requestFocus();
-            return;
-        }
-
-        if (!password.equals(rePassword)) {
-            editTextRePassword.setError("Passwords do not match");
-            editTextRePassword.requestFocus();
-            return;
-        }
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBar.setVisibility(View.GONE);
-                        if (task.isSuccessful()) {
-                            Toast.makeText(RegisterActivity.this, "Accoint Created",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Toast.makeText(RegisterActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-        // Proceed with registration logic
-        // For now, we'll just display a Toast message
-        Toast.makeText(RegisterActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
     }
 
 }
