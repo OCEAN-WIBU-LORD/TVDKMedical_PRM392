@@ -3,6 +3,7 @@ package com.example.tvdkmedical;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class ViewMainContent extends AppCompatActivity {
     ProgressBar progressBar;
     TextView logOut, profileId;
     FirebaseUser userDetails;
+    Button btnProfile;
 
 
     @Override
@@ -48,6 +50,7 @@ public class ViewMainContent extends AppCompatActivity {
             profileId.setText(userDetails.getEmail());
         }
 
+
         logOut.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -56,6 +59,19 @@ public class ViewMainContent extends AppCompatActivity {
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(),"Log Out successfully", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        });
+        Button btnProfile1 = findViewById(R.id.btnProfile);
+
+        // Set OnClickListener to the button
+        btnProfile1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start LoginActivity
+                Intent intent = new Intent(ViewMainContent.this, UserProfileActivity.class);
+
+                // Start the LoginActivity
+                startActivity(intent);
             }
         });
     }
