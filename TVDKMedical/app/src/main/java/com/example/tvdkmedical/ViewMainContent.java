@@ -3,6 +3,7 @@ package com.example.tvdkmedical;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,6 +25,8 @@ public class ViewMainContent extends AppCompatActivity {
     ProgressBar progressBar;
     TextView logOut, profileId;
     FirebaseUser userDetails;
+    Button btnProfile;
+    Button appointmentDetailsBtn;
 
 
     @Override
@@ -38,7 +42,10 @@ public class ViewMainContent extends AppCompatActivity {
 
         mAuth =FirebaseAuth.getInstance();
         logOut = findViewById(R.id.logOut);
-       // profileId = findViewById(R.id.profileId);
+
+        //profileId = findViewById(R.id.profileId);
+        appointmentDetailsBtn = findViewById(R.id.appointmentDetails);
+
         userDetails = mAuth.getCurrentUser();
         if(userDetails == null){
             Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
@@ -48,6 +55,7 @@ public class ViewMainContent extends AppCompatActivity {
            // profileId.setText(userDetails.getEmail());
         }
 
+
         logOut.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -56,6 +64,27 @@ public class ViewMainContent extends AppCompatActivity {
                 startActivity(intent);
                 Toast.makeText(getApplicationContext(),"Log Out successfully", Toast.LENGTH_SHORT).show();
                 finish();
+            }
+        });
+        Button btnProfile1 = findViewById(R.id.btnProfile);
+
+        // Set OnClickListener to the button
+        btnProfile1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to start LoginActivity
+                Intent intent = new Intent(ViewMainContent.this, UserProfileActivity.class);
+
+                // Start the LoginActivity
+                startActivity(intent);
+            }
+        });
+
+        appointmentDetailsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewMainContent.this, AppointmentDetailsActivity.class);
+                startActivity(intent);
             }
         });
     }

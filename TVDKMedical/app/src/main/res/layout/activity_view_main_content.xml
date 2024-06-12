@@ -64,7 +64,29 @@
                     android:padding="10dp"
                     android:textColorHint="#1762EF" />
 
+            <Button
+                android:id="@+id/appointmentDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/appointment_details"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.906"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.306" />
 
+            <Button
+                android:id="@+id/btnProfile"
+                android:layout_width="151dp"
+                android:layout_height="63dp"
+                android:text="UserProfile"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.95"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.953" />
             <TextView
                 android:id="@+id/textView"
                 android:layout_width="374dp"
@@ -253,6 +275,7 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="0dp"
+
         android:layout_height="wrap_content"
         app:backgroundTint="@color/white"
         app:itemIconTint="#1762EF"
@@ -264,3 +287,6 @@
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
