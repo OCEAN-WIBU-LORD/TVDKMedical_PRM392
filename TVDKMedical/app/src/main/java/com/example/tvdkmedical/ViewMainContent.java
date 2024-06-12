@@ -38,14 +38,14 @@ public class ViewMainContent extends AppCompatActivity {
 
         mAuth =FirebaseAuth.getInstance();
         logOut = findViewById(R.id.logOut);
-        profileId = findViewById(R.id.profileId);
+       // profileId = findViewById(R.id.profileId);
         userDetails = mAuth.getCurrentUser();
         if(userDetails == null){
             Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
             startActivity(intent);
             finish();
         }else{
-            profileId.setText(userDetails.getEmail());
+           // profileId.setText(userDetails.getEmail());
         }
 
         logOut.setOnClickListener(new View.OnClickListener(){
