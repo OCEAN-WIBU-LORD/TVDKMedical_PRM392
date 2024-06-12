@@ -14,6 +14,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,6 +26,7 @@ public class ViewMainContent extends AppCompatActivity {
     TextView logOut, profileId;
     FirebaseUser userDetails;
     Button btnProfile;
+    Button appointmentDetailsBtn;
 
 
     @Override
@@ -41,6 +43,7 @@ public class ViewMainContent extends AppCompatActivity {
         mAuth =FirebaseAuth.getInstance();
         logOut = findViewById(R.id.logOut);
         profileId = findViewById(R.id.profileId);
+        appointmentDetailsBtn = findViewById(R.id.appointmentDetails);
         userDetails = mAuth.getCurrentUser();
         if(userDetails == null){
             Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
@@ -71,6 +74,14 @@ public class ViewMainContent extends AppCompatActivity {
                 Intent intent = new Intent(ViewMainContent.this, UserProfileActivity.class);
 
                 // Start the LoginActivity
+                startActivity(intent);
+            }
+        });
+
+        appointmentDetailsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ViewMainContent.this, AppointmentDetailsActivity.class);
                 startActivity(intent);
             }
         });
