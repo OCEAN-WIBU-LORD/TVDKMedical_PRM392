@@ -1,24 +1,26 @@
 package com.example.tvdkmedical.models;
 
 import java.text.DateFormat;
+import java.util.Date;
 
 public class Appointment {
-    Integer userId;
-    Integer doctorId;
-    DateFormat dateBooking;
+    Users user;
+    Doctor doctor;
+    Date dateBooking;
     String note;
-
     Integer diseaseId;
+    Date startTime;
+    Date endTime;
 
-    public Integer getUserId() {
-        return userId;
+    public Users getUser() {
+        return user;
     }
 
-    public Integer getDoctorId() {
-        return doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public DateFormat getDateBooking() {
+    public Date getDateBooking() {
         return dateBooking;
     }
 
@@ -30,11 +32,21 @@ public class Appointment {
         return diseaseId;
     }
 
-    public Appointment(Integer userId, Integer doctorId, DateFormat dateBooking, String note, Integer diseaseId) {
-        this.userId = userId;
-        this.doctorId = doctorId;
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public Appointment(Users userId, Doctor doctorId, Date dateBooking, String note, Integer diseaseId, Date startTime, Date endTime) {
+        this.user = userId;
+        this.doctor = doctorId;
         this.dateBooking = dateBooking;
         this.note = note;
         this.diseaseId = diseaseId;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 }
