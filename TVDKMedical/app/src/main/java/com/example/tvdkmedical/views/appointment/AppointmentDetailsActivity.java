@@ -14,23 +14,11 @@ import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Users;
 import com.example.tvdkmedical.repositories.AppointmentCallback;
 import com.example.tvdkmedical.repositories.AppointmentResp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class AppointmentDetailsActivity extends AppCompatActivity {
-
-    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
