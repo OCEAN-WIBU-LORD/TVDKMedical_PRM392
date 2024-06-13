@@ -15,7 +15,7 @@
 
         <!-- ImageView cho ảnh bên trái -->
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/ivAvatar"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:src="@drawable/avatar"
@@ -32,7 +32,7 @@
 
             <!-- TextView cho tiêu đề -->
             <TextView
-                android:id="@+id/titleTextView"
+                android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tiêu đề"
@@ -41,7 +41,7 @@
 
             <!-- TextView cho thông tin -->
             <TextView
-                android:id="@+id/infoTextView"
+                android:id="@+id/tvInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Thông tin"
