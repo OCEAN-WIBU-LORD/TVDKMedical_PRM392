@@ -25,10 +25,10 @@ public class UserProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Create an Intent to start LoginActivity
-                Intent intent = new Intent(UserProfileActivity.this, Fragm.class);
+                //Intent intent = new Intent(UserProfileActivity.this, Fragm.class);
 
                 // Start the LoginActivity
-                startActivity(intent);
+                //startActivity(intent);
             }
         });
 

@@ -9,7 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="yellow">#FF0</color>
     <color name="red">#FF0000</color>
-
     <color name="lightBlue">#d9fdff</color>
     <color name="lowLightBlue">#F5FAFF</color>
     <color name="my_primary">#5E35B1</color>
@@ -23,4 +22,8 @@
     <color name="light_blue_A200">#FF40C4FF</color>
     <color name="light_blue_A400">#FF00B0FF</color>
     <color name="black_overlay">#66000000</color>
+    <color name="colorGray">#EFF1FC</color>
+    <color name="colorBlue">#1648CE</color>
+    <color name="colorLightRed">#FAE9E9</color>
+    <color name="colorGreyText">#575A61</color>
 </resources>
