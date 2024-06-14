@@ -1,8 +1,6 @@
 package com.example.tvdkmedical;
 
-import static com.example.tvdkmedical.R.id.bottomnavigation;
-import static com.example.tvdkmedical.R.id.navhome;
-import static com.example.tvdkmedical.R.id.postlist;
+
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,7 +34,6 @@ import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Post;
 import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;
 import com.google.android.material.button.MaterialButton;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +41,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.type.DateTime;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -55,31 +51,19 @@ import java.util.Locale;
 import java.util.Objects;
 
 public class ViewMainContent extends AppCompatActivity {
-//    MaterialButton buttonLogOut;
-//    FirebaseAuth mAuth;
-//    ProgressBar progressBar;
-//    TextView logOut, profileId, doctorName,dateInfo,timeInfo;
-//    ImageView doctorImage;
-//    FirebaseUser userDetails;
-//    Button btnProfile;
-//    Button appointmentDetailsBtn;
-//    DatabaseReference database, appointmentDatabase, doctorDatabase;
-//    PostAdapter postAdapter;
-//    RecyclerView recyclerView;
-//    List<Post> data;
-//
+
       ActivityViewMainContentBinding binding;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding =ActivityViewMainContentBinding.inflate(getLayoutInflater());
+        binding = ActivityViewMainContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new  HomeFragment());
-        binding.bottomnavigation.setOnItemSelectedListener(item ->{
+        replaceFragment(new HomeFragment());
+        binding.bottomnavigation.setOnItemSelectedListener(item -> {
 
-            switch (item.getTitle().toString()){
+            switch (item.getTitle().toString()) {
                 case "Home":
                     replaceFragment(new HomeFragment());
                     break;
@@ -96,164 +80,14 @@ public class ViewMainContent extends AppCompatActivity {
             }
             return true;
         });
-//        mAuth =FirebaseAuth.getInstance();
-//        logOut = findViewById(R.id.logOut);
-//        //profileId = findViewById(R.id.profileId);
-//        appointmentDetailsBtn = findViewById(R.id.appointmentDetails);
-//        doctorImage=findViewById(R.id.doctor_image);
-//        doctorName =findViewById(R.id.doctor_name);
-//        dateInfo=findViewById(R.id.date_info);
-//        timeInfo=findViewById(R.id.time_info);
-//
-//        userDetails = mAuth.getCurrentUser();
-//        if(userDetails == null){
-//            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }else{
-//           // profileId.setText(userDetails.getEmail());
-//        }
-//
-//        recyclerView=findViewById(R.id.postlist);
-//        database = FirebaseDatabase.getInstance().getReference().child("posts");
-//
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        data = new ArrayList<>();
-//        postAdapter=new PostAdapter(data,this);
-//        recyclerView.setAdapter(postAdapter);
-//
-//        appointmentDatabase = FirebaseDatabase.getInstance().getReference().child("appointments");
-//        appointmentDatabase.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                if (snapshot.exists()) {
-//                    Appointment nearestAppointment = new Appointment();
-//                    long now = new Date().getTime();
-//
-//                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-//                        String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
-//                        String userId = Objects.requireNonNull(dataSnapshot.child("userId").getValue()).toString();
-//
-//                        if ("pending".equals(status) && userId.equals(userDetails.getUid())) {
-//                            int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").getValue(Integer.class));
-//                            com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
-//                            int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").getValue(Integer.class));
-//                            com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
-//                           if (nearestAppointment == null || nearestAppointment.getStartTime() == null|| startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
-//                                String appointmentId =  Objects.requireNonNull(dataSnapshot.getKey().toString());
-//                                String diseasedId =  Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
-//                                String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
-//                                String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
-//
-//                                nearestAppointment = new Appointment( appointmentId, diseasedId,doctorId, endTs, note, startTs, status, userId);
-//                           }
-//                        }
-//                    }
-//
-//                    if (nearestAppointment != null) {
-//                        DatabaseReference doctorDatabase = FirebaseDatabase.getInstance().getReference().child("doctors").child(nearestAppointment.getDoctorId());
-//                        doctorDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-//                            @Override
-//                            public void onDataChange(@NonNull DataSnapshot doctorSnapshot) {
-//                                if (doctorSnapshot.exists()) {
-//                                    String doctorNameStr = Objects.requireNonNull(doctorSnapshot.child("name").getValue()).toString();
-//                                    doctorName.setText(doctorNameStr);
-//                                }
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(@NonNull DatabaseError error) {
-//                                Toast.makeText(getApplicationContext(), "Failed to read doctor data from Firebase.", Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                        Date startDate = nearestAppointment.getStartTime().toDate();
-//                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-//                        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-//                        dateInfo.setText(dateFormat.format(startDate));
-//                        timeInfo.setText(timeFormat.format(startDate));
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(getApplicationContext(), "Failed to read data from Firebase.", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//        database.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                for(DataSnapshot dataSnapshot :snapshot.getChildren()){
-//                    Post post=new Post();
-//                    //String i =Objects.requireNonNull(dataSnapshot.getKey().toString());
-//                    post.setPost_id(Objects.requireNonNull(dataSnapshot.getKey()));
-//                    post.setTitle(Objects.requireNonNull(dataSnapshot.child("title").getValue().toString()));
-//                    post.setContent(Objects.requireNonNull(dataSnapshot.child("content").getValue().toString()));
-//                    post.setAuthor(Objects.requireNonNull(dataSnapshot.child("author").getValue().toString()));
-//                 //   post.setCategory(Objects.requireNonNull(dataSnapshot.child("category").getValue().toString()));
-//                    post.setCategory("abc");
-//                    String date =Objects.requireNonNull(dataSnapshot.child("date").getValue().toString());
-//                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//                    Date dateformat=null;
-//                    try {
-//                        dateformat=dateFormat.parse(date);
-//                    } catch (ParseException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                    post.setDate(dateformat);
-//                    data.add(post);
-//                }
-//                postAdapter.notifyDataSetChanged();
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(getApplicationContext(), "Failed to read data from Firebase.", Toast.LENGTH_SHORT).show();
-//
-//            }
-//        });
-//
-//        logOut.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//                FirebaseAuth.getInstance().signOut();
-//                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//                startActivity(intent);
-//                Toast.makeText(getApplicationContext(),"Log Out successfully", Toast.LENGTH_SHORT).show();
-//                finish();
-//            }
-//        });
-//        Button btnProfile1 = findViewById(R.id.btnProfile);
-//
-//        // Set OnClickListener to the button
-//        btnProfile1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // Create an Intent to start LoginActivity
-//                Intent intent = new Intent(ViewMainContent.this, UserProfileActivity.class);
-//
-//                // Start the LoginActivity
-//                startActivity(intent);
-//            }
-//        });
-//
-//        appointmentDetailsBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(ViewMainContent.this, AppointmentDetailsActivity.class);
-//                startActivity(intent);
-//            }
-//        });
+
     }
-
-
     private void replaceFragment(Fragment Fragment) {
         FragmentManager fragmentManager= getSupportFragmentManager();
         FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,Fragment);
         fragmentTransaction.commit();
+
 
     }
 }
