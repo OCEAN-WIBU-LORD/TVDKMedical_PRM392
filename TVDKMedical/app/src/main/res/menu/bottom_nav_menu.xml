@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_search"
         android:title="Search" />
     <item
+        android:id="@+id/nav_gemini"
+        android:icon="@drawable/gemini_icon"
+        android:title="Gemini Analysis" />
+    <item
         android:id="@+id/nav_appointment"
         android:icon="@drawable/ic_appointment"
         android:title="Appointment" />
