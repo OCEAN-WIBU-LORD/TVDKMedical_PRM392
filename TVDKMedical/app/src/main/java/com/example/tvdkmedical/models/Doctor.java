@@ -3,13 +3,13 @@ package com.example.tvdkmedical.models;
 import java.util.Date;
 
 public class Doctor {
-    Integer doctorId;
+    String doctorId;
     String name;
     Date dateOfBirth;
 
     String inforDoctor;
     Integer doctorVoted;
-    public Integer getDoctorId() {
+    public String getDoctorId() {
         return doctorId;
     }
 
@@ -29,7 +29,7 @@ public class Doctor {
         return doctorVoted;
     }
 
-    public Doctor(Integer doctorId, String name, Date dateOfBirth, String inforDoctor, Integer doctorVoted) {
+    public Doctor(String doctorId, String name, Date dateOfBirth, String inforDoctor, Integer doctorVoted) {
         this.doctorId = doctorId;
         this.name = name;
         this.dateOfBirth = dateOfBirth;

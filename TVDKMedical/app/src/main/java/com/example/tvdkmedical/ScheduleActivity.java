@@ -1,6 +1,7 @@
 package com.example.tvdkmedical;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -20,7 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.models.Users;
+import com.example.tvdkmedical.repositories.AppointmentCallback;
+import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.google.firebase.Timestamp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,17 +45,16 @@ public class ScheduleActivity extends AppCompatActivity {
     private Spinner spinnerMonths;
     private RecyclerView rcv;
     private RecyclerView rcvAppointmentToday;
-
     private RecyclerView rcvAllAppointment;
     private List<Day> days;
 
-    private List<Appointment> appointments;
+    ArrayList<Appointment> appointments;
     private List<Doctor> doctors;
     private DayAdapter adapter;
     private AppointmentTodayAdapter atAdapter;
-
     private AllAppointmentAdapter allAppointmentAdapter;
     private TextView currentDate;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +69,10 @@ public class ScheduleActivity extends AppCompatActivity {
         days = new ArrayList<>();
         appointments = new ArrayList<>();
         setCurrentDate();
+
         initSpinner();
+
         initRecyclerView();
-        loadFakeData();
         initRecyclerViewAppointmentToday();
         initRecyclerViewAllAppointment();
 
@@ -89,9 +98,7 @@ public class ScheduleActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedMonth = parent.getItemAtPosition(position).toString();
-                // Chuyển đổi tên tháng thành số tháng (ví dụ: "January" thành 0, "February" thành 1, v.v.)
                 int monthIndex = position;
-                // Cập nhật ngày trong tháng được chọn
                 updateDaysOfMonth(monthIndex);
                 Toast.makeText(ScheduleActivity.this, "Selected: " + selectedMonth, Toast.LENGTH_SHORT).show();
             }
@@ -111,17 +118,11 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void initRecyclerViewAppointmentToday() {
-        atAdapter = new AppointmentTodayAdapter(this, appointments,doctors);
-        rcvAppointmentToday.setAdapter(atAdapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
-        rcvAppointmentToday.setLayoutManager(layoutManager);
+        loadFakeData();
     }
 
     private void initRecyclerViewAllAppointment() {
-        allAppointmentAdapter = new AllAppointmentAdapter(this, appointments,doctors);
-        rcvAllAppointment.setAdapter(allAppointmentAdapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false);
-        rcvAllAppointment.setLayoutManager(layoutManager);
+        loadFakeData();
     }
 
     private void setCurrentDate() {
@@ -132,16 +133,13 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void updateDaysOfMonth(int selectedMonth) {
-        // Xóa dữ liệu cũ
         days.clear();
 
-        // Lấy ngày đầu tiên của tháng được chọn
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
         calendar.set(Calendar.MONTH, selectedMonth);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
 
-        // Lặp qua từng ngày trong tháng và lấy ngày và thứ trong tuần của mỗi ngày
         int numDaysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
         for (int i = 0; i < numDaysInMonth; i++) {
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -151,32 +149,41 @@ public class ScheduleActivity extends AppCompatActivity {
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        // Thông báo cho adapter rằng dữ liệu đã thay đổi, nếu adapter không null
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         } else {
-            // Ghi log hoặc xử lý trường hợp adapter null
             Toast.makeText(ScheduleActivity.this, "Adapter chưa được khởi tạo", Toast.LENGTH_SHORT).show();
         }
     }
 
     private void loadFakeData() {
-        appointments = new ArrayList<>();
         doctors = new ArrayList<>();
 
-        // Fake data for doctors
-        doctors.add(new Doctor(1, "Dr. John Doe", new Date(1980, 1, 1), "Cardiologist", 5));
-        doctors.add(new Doctor(2, "Dr. Jane Smith", new Date(1985, 5, 10), "Dermatologist", 4));
-        doctors.add(new Doctor(3, "Dr. Richard Roe", new Date(1975, 3, 15), "Neurologist", 3));
-        doctors.add(new Doctor(4, "Dr. Emily Davis", new Date(1990, 7, 25), "Pediatrician", 5));
-        doctors.add(new Doctor(5, "Dr. Michael Brown", new Date(1983, 11, 30), "Surgeon", 4));
+        doctors.add(new Doctor("doctor_id_1", "Dr. John Doe", new Date(1980, 1, 1), "Cardiologist", 5));
+        doctors.add(new Doctor("doctor_id_2", "Dr. Jane Smith", new Date(1985, 5, 10), "Dermatologist", 4));
+        doctors.add(new Doctor("doctor_id_3", "Dr. Richard Roe", new Date(1975, 3, 15), "Neurologist", 3));
+        doctors.add(new Doctor("doctor_id_4", "Dr. Emily Davis", new Date(1990, 7, 25), "Pediatrician", 5));
+        doctors.add(new Doctor("doctor_id_5", "Dr. Michael Brown", new Date(1983, 11, 30), "Surgeon", 4));
 
-        // Fake data for appointments
-        appointments.add(new Appointment("appointment_id_1", "disease_id_1", "1", new Timestamp(new Date().getTime() / 1000, 0), "Regular check-up", new Timestamp(new Date().getTime() / 1000, 0), "pending", "user_id_1"));
-        appointments.add(new Appointment("appointment_id_2", "disease_id_2", "2", new Timestamp(new Date().getTime() / 1000, 0), "Follow-up visit", new Timestamp(new Date().getTime() / 1000, 0), "confirmed", "user_id_2"));
-        appointments.add(new Appointment("appointment_id_3", "disease_id_3", "3", new Timestamp(new Date().getTime() / 1000, 0), "Initial consultation", new Timestamp(new Date().getTime() / 1000, 0), "completed", "user_id_3"));
-        appointments.add(new Appointment("appointment_id_4", "disease_id_4", "4", new Timestamp(new Date().getTime() / 1000, 0), "Routine check-up", new Timestamp(new Date().getTime() / 1000, 0), "cancelled", "user_id_4"));
-        appointments.add(new Appointment("appointment_id_5", "disease_id_5", "5", new Timestamp(new Date().getTime() / 1000, 0), "Emergency visit", new Timestamp(new Date().getTime() / 1000, 0), "pending", "user_id_5"));
+        AppointmentResp appointmentResp = new AppointmentResp();
+
+        appointmentResp.getAppointments(new AppointmentCallback() {
+            @Override
+            public void onCallback(List<Appointment> appointmentList) {
+                appointments = new ArrayList<>(appointmentList);
+                System.out.println(appointments.size());
+
+                atAdapter = new AppointmentTodayAdapter(ScheduleActivity.this, appointments, doctors);
+                rcvAppointmentToday.setAdapter(atAdapter);
+                GridLayoutManager layoutManagerToday = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
+                rcvAppointmentToday.setLayoutManager(layoutManagerToday);
+
+                allAppointmentAdapter = new AllAppointmentAdapter(ScheduleActivity.this, appointments, doctors);
+                rcvAllAppointment.setAdapter(allAppointmentAdapter);
+                GridLayoutManager layoutManagerAll = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
+                rcvAllAppointment.setLayoutManager(layoutManagerAll);
+            }
+        });
     }
 
     private Date parseDate(String dateString) {
@@ -188,6 +195,4 @@ public class ScheduleActivity extends AppCompatActivity {
             return null;
         }
     }
-
-
 }

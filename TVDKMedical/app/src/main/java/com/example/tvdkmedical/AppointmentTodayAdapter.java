@@ -1,27 +1,29 @@
 package com.example.tvdkmedical;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tvdkmedical.Day;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTodayAdapter.ViewHolder> {
 
     private Context context;
     private List<Appointment> appointments;
     private List<Doctor> doctors;
+
     public AppointmentTodayAdapter(Context context, List<Appointment> appointments, List<Doctor> doctors) {
         this.context = context;
         this.appointments = appointments;
@@ -39,12 +41,13 @@ public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTod
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Appointment a = appointments.get(position);
-        Doctor d = findDoctorById(Integer.parseInt(a.getDoctorId())); // Find the doctor corresponding to the appointment
+        Doctor d = findDoctorById(a.getDoctorId()); // Tìm bác sĩ tương ứng với cuộc hẹn
         holder.setData(a, d);
     }
-    public Doctor findDoctorById(int doctorId) {
+
+    public Doctor findDoctorById(String doctorId) {
         for (Doctor doctor : doctors) {
-            if (doctor.getDoctorId() == doctorId) {
+            if (doctor.getDoctorId().equals(doctorId)) {
                 return doctor;
             }
         }
@@ -82,8 +85,8 @@ public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTod
         }
 
         public void setData(Appointment appointment, Doctor doctor) {
-            txtStartTime.setText(appointment.getStartTime().toString());
-            txtEndTime.setText(appointment.getEndTime().toString());
+            txtStartTime.setText(formatTimestampToTime(appointment.getStartTime()));
+            txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
                 txtDoctorInfo.setText(doctor.getInforDoctor());
@@ -93,7 +96,10 @@ public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTod
             }
         }
 
-
+        private String formatTimestampToTime(Timestamp timestamp) {
+            Date date = timestamp.toDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            return sdf.format(date);
+        }
     }
 }
-

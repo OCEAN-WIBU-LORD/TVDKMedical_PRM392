@@ -10,6 +10,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
 
 
 public class UserProfileActivity extends AppCompatActivity {
@@ -24,11 +25,10 @@ public class UserProfileActivity extends AppCompatActivity {
         editCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to start LoginActivity
-                //Intent intent = new Intent(UserProfileActivity.this, Fragm.class);
 
+                Intent intent = new Intent(UserProfileActivity.this, Fragment.class);
                 // Start the LoginActivity
-                //startActivity(intent);
+                startActivity(intent);
             }
         });
 

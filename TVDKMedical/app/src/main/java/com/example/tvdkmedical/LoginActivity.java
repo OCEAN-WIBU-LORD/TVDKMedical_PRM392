@@ -2,6 +2,7 @@ package com.example.tvdkmedical;
 
 import static com.example.tvdkmedical.R.*;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -99,11 +100,20 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if(task.isSuccessful()){
-                                    Toast.makeText(getApplicationContext(),"Login Successful",
-                                            Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(getApplicationContext(), ScheduleActivity.class);
-                                    startActivity(intent);
-                                    finish();
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    if (user != null) {
+                                        String uid = user.getUid();
+                                        // Lưu UID vào SharedPreferences
+                                        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("USER_UID", uid);
+                                        editor.apply();
+                                        Toast.makeText(getApplicationContext(), "Login Successful",
+                                                Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(getApplicationContext(), ViewMainContent.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
                                 }else{
                                     Toast.makeText(LoginActivity.this, "Authentication Failed.",
                                             Toast.LENGTH_SHORT).show();

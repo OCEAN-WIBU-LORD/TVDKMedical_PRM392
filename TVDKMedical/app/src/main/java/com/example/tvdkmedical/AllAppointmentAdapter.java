@@ -1,27 +1,29 @@
 package com.example.tvdkmedical;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.tvdkmedical.Day;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAdapter.ViewHolder> {
 
     private Context context;
     private List<Appointment> appointments;
     private List<Doctor> doctors;
+
     public AllAppointmentAdapter(Context context, List<Appointment> appointments, List<Doctor> doctors) {
         this.context = context;
         this.appointments = appointments;
@@ -39,13 +41,13 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Appointment a = appointments.get(position);
-        Doctor d = findDoctorById(Integer.parseInt(a.getDoctorId())); // Find the doctor corresponding to the appointment
+        Doctor d = findDoctorById(a.getDoctorId()); // Find the doctor corresponding to the appointment
         holder.setData(a, d);
     }
 
-    public Doctor findDoctorById(int doctorId) {
+    public Doctor findDoctorById(String doctorId) {
         for (Doctor doctor : doctors) {
-            if (doctor.getDoctorId() == doctorId) {
+            if (doctor.getDoctorId().equals(doctorId)) {
                 return doctor;
             }
         }
@@ -84,9 +86,10 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             bindingAction();
         }
 
-        public void setData(Appointment appointment,Doctor doctor) {
-            txtStartTime.setText(appointment.getStartTime().toString());
-            txtEndTime.setText(appointment.getEndTime().toString());
+        public void setData(Appointment appointment, Doctor doctor) {
+            txtStartTime.setText(formatTimestampToTime(appointment.getStartTime()));
+            txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
+            txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
                 txtDoctorInfo.setText(doctor.getInforDoctor());
@@ -94,8 +97,18 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
                 txtDoctorName.setText("Unknown Doctor");
                 txtDoctorInfo.setText("");
             }
-            //txtDateBooking.setText(appointment.getDateBooking().toString());
+        }
+
+        private String formatTimestampToTime(Timestamp timestamp) {
+            Date date = timestamp.toDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            return sdf.format(date);
+        }
+
+        private String formatTimestampToDate(Timestamp timestamp) {
+            Date date = timestamp.toDate();
+            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM yyyy", Locale.getDefault());
+            return sdf.format(date);
         }
     }
 }
-
