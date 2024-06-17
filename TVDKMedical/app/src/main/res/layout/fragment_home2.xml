@@ -123,7 +123,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Đinh Đại Dương"
+                        android:text=""
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
@@ -134,7 +134,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="0"
                         android:scaleType="centerCrop"
-                        android:src="@drawable/avatar" />
+                        />
                 </LinearLayout>
 
                 <RelativeLayout
@@ -269,5 +269,6 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
 
 </FrameLayout>

@@ -53,22 +53,35 @@ import java.util.Objects;
 public class ViewMainContent extends AppCompatActivity {
 
       ActivityViewMainContentBinding binding;
-
+    Fragment homeFragment;
+    Fragment userProfileFragment;
+    Fragment appointmentFragment;
+    Fragment searchFragment;
+    Fragment activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityViewMainContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        replaceFragment(new HomeFragment());
-        binding.bottomnavigation.setOnItemSelectedListener(item -> {
+        homeFragment = new HomeFragment();
+        userProfileFragment = new UserProfileFragment();
 
+        activeFragment = homeFragment;
+
+        getSupportFragmentManager().beginTransaction()
+
+                .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
+                .add(R.id.frame_layout, homeFragment, "1")
+                .commit();
+
+        binding.bottomnavigation.setOnItemSelectedListener(item -> {
             switch (item.getTitle().toString()) {
                 case "Home":
-                    replaceFragment(new HomeFragment());
+                    showFragment(homeFragment);
                     break;
                 case "Profile":
-                    replaceFragment(new UserProfileFragment());
+                    showFragment(userProfileFragment);
                     break;
 
                 case "Appointment":
@@ -82,12 +95,8 @@ public class ViewMainContent extends AppCompatActivity {
         });
 
     }
-    private void replaceFragment(Fragment Fragment) {
-        FragmentManager fragmentManager= getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.frame_layout,Fragment);
-        fragmentTransaction.commit();
-
-
+    private void showFragment(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(fragment).commit();
+        activeFragment = fragment;
     }
 }
