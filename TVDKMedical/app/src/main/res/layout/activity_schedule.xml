@@ -65,8 +65,8 @@
 
         <Button
             android:id="@+id/button"
-            android:layout_width="120dp"
-            android:layout_height="30dp"
+            android:layout_width="121dp"
+            android:layout_height="41dp"
             android:layout_marginTop="28dp"
             android:background="@drawable/rounded_button"
             android:text="+ Add"
@@ -100,6 +100,19 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/no_appointments_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No appointment today"
+                android:textSize="18sp"
+                android:visibility="gone"
+                android:gravity="center"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvAppointmentToday"

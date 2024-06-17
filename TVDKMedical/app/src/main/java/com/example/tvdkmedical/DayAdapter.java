@@ -20,10 +20,16 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
     private Context context;
     private List<Day> days;
     private int selectedItem = RecyclerView.NO_POSITION;
+    private OnDayClickListener onDayClickListener;
 
-    public DayAdapter(Context context, List<Day> days) {
+    public interface OnDayClickListener {
+        void onDayClick(int position, Day day);
+    }
+
+    public DayAdapter(Context context, List<Day> days, OnDayClickListener onDayClickListener) {
         this.context = context;
         this.days = days;
+        this.onDayClickListener = onDayClickListener;
     }
 
     @NonNull
@@ -57,16 +63,18 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
             holder.txtDayOfWeek.setTextSize(20);
         }
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Lưu vị trí của item được chọn
-                int previousItem = selectedItem;
-                selectedItem = holder.getAdapterPosition();
+        holder.itemView.setOnClickListener(v -> {
+            // Lưu vị trí của item được chọn
+            int previousItem = selectedItem;
+            selectedItem = holder.getAdapterPosition();
 
-                // Cập nhật item trước đó và item mới được chọn
-                notifyItemChanged(previousItem);
-                notifyItemChanged(selectedItem);
+            // Cập nhật item trước đó và item mới được chọn
+            notifyItemChanged(previousItem);
+            notifyItemChanged(selectedItem);
+
+            // Gọi sự kiện nhấp chuột
+            if (onDayClickListener != null) {
+                onDayClickListener.onDayClick(position, day);
             }
         });
     }
@@ -85,16 +93,9 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
             txtDayOfWeek = itemView.findViewById(R.id.txtDayofWeek);
         }
 
-        private void bindingAction() {
-        }
-
-        private void onItemViewClick(View view) {
-        }
-
         public VH(@NonNull View v) {
             super(v);
             bindingView();
-            bindingAction();
         }
 
         public void setData(Day day) {
@@ -103,4 +104,5 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         }
     }
 }
+
 

@@ -95,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="36dp"
             android:text="Dinh Dai Duong"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -115,44 +115,13 @@
             app:layout_constraintTop_toBottomOf="@+id/doctorNameAppointment" />
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="42dp"
-            android:layout_height="39dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/doctorInforAppointment"
-            app:srcCompat="@drawable/star" />
-
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Rating"
-            app:layout_constraintStart_toEndOf="@+id/imageView3"
-            app:layout_constraintTop_toBottomOf="@+id/doctorInforAppointment" />
-
-        <TextView
-            android:id="@+id/doctorRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="156dp"
-            android:text="5 out of 5"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView3" />
-
-        <ImageView
             android:id="@+id/imgAvatar"
-            android:layout_width="110dp"
-            android:layout_height="112dp"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="16dp"
+            android:layout_width="95dp"
+            android:layout_height="101dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginEnd="20dp"
             android:background="@drawable/avatar_rounded"
-            app:layout_constraintStart_toEndOf="@+id/textView11"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/avatar" />
 
@@ -176,7 +145,7 @@
             android:layout_marginTop="8dp"
             android:background="@drawable/rounded_button_white"
             android:text="CANCEL"
-            android:textColor="@color/colorBlue"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnReschedule"

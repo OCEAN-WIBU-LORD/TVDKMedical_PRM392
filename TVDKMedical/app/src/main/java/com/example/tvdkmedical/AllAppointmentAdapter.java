@@ -59,6 +59,12 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         return appointments.size();
     }
 
+    public void updateAppointments(List<Appointment> newAppointments) {
+        this.appointments = newAppointments;
+        notifyDataSetChanged();
+    }
+
+
     protected class ViewHolder extends RecyclerView.ViewHolder {
         private TextView txtStartTime;
         private TextView txtEndTime;
@@ -92,7 +98,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
-                txtDoctorInfo.setText(doctor.getInforDoctor());
+                txtDoctorInfo.setText(doctor.getBio());
             } else {
                 txtDoctorName.setText("Unknown Doctor");
                 txtDoctorInfo.setText("");
@@ -104,6 +110,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             return sdf.format(date);
         }
+
 
         private String formatTimestampToDate(Timestamp timestamp) {
             Date date = timestamp.toDate();

@@ -1,36 +1,33 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.fragments;
 
 import android.os.Bundle;
-import android.util.Log;
+
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import com.example.tvdkmedical.AllAppointmentAdapter;
+import com.example.tvdkmedical.AppointmentTodayAdapter;
+import com.example.tvdkmedical.Day;
+import com.example.tvdkmedical.DayAdapter;
+import com.example.tvdkmedical.R;
+import com.example.tvdkmedical.ScheduleActivity;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
-import com.example.tvdkmedical.models.Users;
 import com.example.tvdkmedical.repositories.AppointmentCallback;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.DoctorCallBack;
 import com.example.tvdkmedical.repositories.DoctorResp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +36,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ScheduleActivity extends AppCompatActivity implements DayAdapter.OnDayClickListener {
+public class AppointmentFragment extends Fragment implements DayAdapter.OnDayClickListener{
 
     private Spinner spinnerMonths;
     private RecyclerView rcv;
@@ -56,16 +53,15 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
     DatabaseReference databaseReference;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule);
-
-        spinnerMonths = findViewById(R.id.spinnerMonth);
-        rcv = findViewById(R.id.recyclerView);
-        rcvAppointmentToday = findViewById(R.id.rcvAppointmentToday);
-        rcvAllAppointment = findViewById(R.id.rcvAllAppointment);
-        currentDate = findViewById(R.id.currentDate);
-        noAppointmentsText = findViewById(R.id.no_appointments_text);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.activity_schedule, container, false);
+        spinnerMonths = rootView.findViewById(R.id.spinnerMonth);
+        rcv = rootView.findViewById(R.id.recyclerView);
+        rcvAppointmentToday = rootView.findViewById(R.id.rcvAppointmentToday);
+        rcvAllAppointment = rootView.findViewById(R.id.rcvAllAppointment);
+        currentDate = rootView.findViewById(R.id.currentDate);
+        noAppointmentsText = rootView.findViewById(R.id.no_appointments_text);
         days = new ArrayList<>();
         appointments = new ArrayList<>();
         setCurrentDate();
@@ -74,17 +70,12 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
         initRecyclerView();
         initRecyclerViewAppointmentToday();
         initRecyclerViewAllAppointment();
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        return rootView;
     }
 
     private void initSpinner() {
         String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, months);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerMonths.setAdapter(adapter);
         spinnerMonths.setSelection(0);
@@ -94,7 +85,6 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedMonth = parent.getItemAtPosition(position).toString();
                 updateDaysOfMonth(position);
-                Toast.makeText(ScheduleActivity.this, "Selected: " + selectedMonth, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -105,9 +95,9 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
     }
 
     private void initRecyclerView() {
-        adapter = new DayAdapter(this, days, this);
+        adapter = new DayAdapter(getContext(), days, this);
         rcv.setAdapter(adapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
         rcv.setLayoutManager(layoutManager);
     }
 
@@ -146,7 +136,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
         if (adapter != null) {
             adapter.notifyDataSetChanged();
         } else {
-            Toast.makeText(ScheduleActivity.this, "Adapter chưa được khởi tạo", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -167,14 +157,14 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
                         appointments = new ArrayList<>(appointmentList);
 
                         // Initialize the adapters with both appointments and doctors
-                        atAdapter = new AppointmentTodayAdapter(ScheduleActivity.this, appointments, doctors);
+                        atAdapter = new AppointmentTodayAdapter(getContext(), appointments, doctors);
                         rcvAppointmentToday.setAdapter(atAdapter);
-                        GridLayoutManager layoutManagerToday = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
+                        GridLayoutManager layoutManagerToday = new GridLayoutManager(getContext(), 1, GridLayoutManager.VERTICAL, false);
                         rcvAppointmentToday.setLayoutManager(layoutManagerToday);
 
-                        allAppointmentAdapter = new AllAppointmentAdapter(ScheduleActivity.this, appointments, doctors);
+                        allAppointmentAdapter = new AllAppointmentAdapter(getContext(), appointments, doctors);
                         rcvAllAppointment.setAdapter(allAppointmentAdapter);
-                        GridLayoutManager layoutManagerAll = new GridLayoutManager(ScheduleActivity.this, 1, GridLayoutManager.VERTICAL, false);
+                        GridLayoutManager layoutManagerAll = new GridLayoutManager(getContext(), 1, GridLayoutManager.VERTICAL, false);
                         rcvAllAppointment.setLayoutManager(layoutManagerAll);
                     }
                 });
@@ -221,7 +211,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
         } else {
             noAppointmentsText.setVisibility(View.GONE);
             rcvAppointmentToday.setVisibility(View.VISIBLE);
-            atAdapter = new AppointmentTodayAdapter(ScheduleActivity.this, filteredAppointments, doctors);
+            atAdapter = new AppointmentTodayAdapter(getContext(), filteredAppointments, doctors);
             rcvAppointmentToday.setAdapter(atAdapter);
             atAdapter.notifyDataSetChanged();
         }

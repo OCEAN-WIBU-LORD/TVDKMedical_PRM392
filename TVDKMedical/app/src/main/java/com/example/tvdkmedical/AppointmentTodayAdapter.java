@@ -59,6 +59,12 @@ public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTod
         return appointments.size();
     }
 
+    public void updateAppointments(List<Appointment> newAppointments) {
+        this.appointments = newAppointments;
+        notifyDataSetChanged();
+    }
+
+
     protected class ViewHolder extends RecyclerView.ViewHolder {
         private TextView txtStartTime;
         private TextView txtEndTime;
@@ -89,7 +95,7 @@ public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTod
             txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
-                txtDoctorInfo.setText(doctor.getInforDoctor());
+                txtDoctorInfo.setText(doctor.getBio());
             } else {
                 txtDoctorName.setText("Unknown Doctor");
                 txtDoctorInfo.setText("");

@@ -2,8 +2,6 @@ package com.example.tvdkmedical.models;
 
 import com.google.firebase.Timestamp;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 public class Appointment {
     private String appointmentId;
