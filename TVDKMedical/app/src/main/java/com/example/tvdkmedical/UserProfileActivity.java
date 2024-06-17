@@ -25,9 +25,8 @@ public class UserProfileActivity extends AppCompatActivity {
         editCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Create an Intent to start LoginActivity
-                Intent intent = new Intent(UserProfileActivity.this, Fragment.class);
 
+                Intent intent = new Intent(UserProfileActivity.this, Fragment.class);
                 // Start the LoginActivity
                 startActivity(intent);
             }

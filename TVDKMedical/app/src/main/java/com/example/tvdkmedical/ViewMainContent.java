@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tvdkmedical.adapters.PostAdapter;
 import com.example.tvdkmedical.databinding.ActivityMainBinding;
 import com.example.tvdkmedical.databinding.ActivityViewMainContentBinding;
+import com.example.tvdkmedical.fragments.AppointmentFragment;
 import com.example.tvdkmedical.fragments.HomeFragment;
 import  com.example.tvdkmedical.R;
 import com.example.tvdkmedical.fragments.UserProfileFragment;
@@ -85,6 +86,7 @@ public class ViewMainContent extends AppCompatActivity {
                     break;
 
                 case "Appointment":
+                    replaceFragment(new AppointmentFragment());
                     break;
                 case "Search":
                     break;
