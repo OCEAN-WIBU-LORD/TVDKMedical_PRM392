@@ -17,9 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tvdkmedical.FragmentUserProfile;
 import com.example.tvdkmedical.LoginActivity;
 import com.example.tvdkmedical.R;
-import com.example.tvdkmedical.UserProfileActivity;
 import com.example.tvdkmedical.ViewMainContent;
 import com.example.tvdkmedical.adapters.PostAdapter;
 import com.example.tvdkmedical.databinding.ActivityMainBinding;
@@ -203,7 +203,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Create an Intent to start LoginActivity
-                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
+                Intent intent = new Intent(getActivity(), FragmentUserProfile.class);
                 startActivity(intent);
             }
         });
