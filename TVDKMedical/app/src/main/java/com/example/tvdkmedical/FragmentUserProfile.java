@@ -20,10 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-
-
-import com.example.tvdkmedical.FragmentEditProfile;
-import com.example.tvdkmedical.ViewMainContent;
+import com.example.tvdkmedical.fragments.HomeFragment;
 
 public class FragmentUserProfile extends Fragment {
 
@@ -60,24 +57,21 @@ public class FragmentUserProfile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
-     //   cardViewer = view.findViewById(R.id.cardViewer);
         returnBtn  = view.findViewById(R.id.returnBtn);
         editProfile = view.findViewById(R.id.editCardView);
-      //  cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
-//        editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
-      //  returnBtn.setOnClickListener(v -> replaceFragment(new ViewMainContent()));
+  //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
+        editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
+       returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
         return view;
     }
 
 
-//    private  void replaceFragment(Fragment fragment) {
-//        FragmentManager fragmentManager = getParentFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.frame_layout, fragment);
-//        fragmentTransaction.commit();
-//    }
-
-
+    private  void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.commit();
+    }
 
 
     private void requestCallPermission() {
