@@ -13,19 +13,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.tvdkmedical.AllAppointmentAdapter;
 import com.example.tvdkmedical.AppointmentTodayAdapter;
 import com.example.tvdkmedical.Day;
 import com.example.tvdkmedical.DayAdapter;
 import com.example.tvdkmedical.R;
-import com.example.tvdkmedical.ScheduleActivity;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
-import com.example.tvdkmedical.repositories.AppointmentCallback;
 import com.example.tvdkmedical.repositories.AppointmentResp;
-import com.example.tvdkmedical.repositories.DoctorCallBack;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.example.tvdkmedical.repositories.DoctorResp;
 import com.google.firebase.database.DatabaseReference;
 
@@ -145,13 +142,13 @@ public class AppointmentFragment extends Fragment implements DayAdapter.OnDayCli
         DoctorResp doctorResp = new DoctorResp();
 
         // Load doctors first
-        doctorResp.getDoctors(new DoctorCallBack() {
+        doctorResp.getDoctors(new Callback<Doctor>() {
             @Override
             public void onCallback(List<Doctor> doctorList) {
                 doctors = new ArrayList<>(doctorList);
 
                 // Now load appointments
-                appointmentResp.getAppointments(new AppointmentCallback() {
+                appointmentResp.getAppointments(new Callback<Appointment>() {
                     @Override
                     public void onCallback(List<Appointment> appointmentList) {
                         appointments = new ArrayList<>(appointmentList);
