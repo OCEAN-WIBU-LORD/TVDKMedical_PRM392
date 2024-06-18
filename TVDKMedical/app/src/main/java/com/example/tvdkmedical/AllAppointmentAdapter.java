@@ -1,6 +1,7 @@
 package com.example.tvdkmedical;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
+import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -81,9 +83,16 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         }
 
         private void bindingAction() {
+            itemView.setOnClickListener(this::onItemViewClick);
         }
 
+        // Navigate to appointment details activity
         private void onItemViewClick(View view) {
+            Appointment appointment = appointments.get(getAdapterPosition());
+
+             Intent intent = new Intent(context, AppointmentDetailsActivity.class);
+             intent.putExtra("appointmentId", appointment.getAppointmentId());
+             context.startActivity(intent);
         }
 
         public ViewHolder(@NonNull View v) {

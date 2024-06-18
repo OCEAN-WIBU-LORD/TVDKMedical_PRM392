@@ -90,4 +90,18 @@ public class Appointment {
     public void setUserId(String userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "Appointment{" +
+                "appointmentId='" + appointmentId + '\'' +
+                ", diseaseId='" + diseaseId + '\'' +
+                ", doctorId='" + doctorId + '\'' +
+                ", endTime=" + endTime +
+                ", note='" + note + '\'' +
+                ", startTime=" + startTime +
+                ", status='" + status + '\'' +
+                ", userId='" + userId + '\'' +
+                '}';
+    }
 }

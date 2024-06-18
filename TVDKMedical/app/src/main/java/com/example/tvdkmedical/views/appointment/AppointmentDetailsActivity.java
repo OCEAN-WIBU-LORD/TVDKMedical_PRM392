@@ -3,7 +3,6 @@ package com.example.tvdkmedical.views.appointment;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -11,9 +10,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.models.Appointment;
-import com.example.tvdkmedical.models.Users;
-import com.example.tvdkmedical.repositories.AppointmentCallback;
 import com.example.tvdkmedical.repositories.AppointmentResp;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +19,21 @@ import java.util.List;
 public class AppointmentDetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        String appointmentId = getIntent().getStringExtra("appointmentId");
 
         AppointmentResp appointmentResp = new AppointmentResp();
 
-        appointmentResp.getAppointments(new AppointmentCallback() {
+
+        appointmentResp.getAppointmentById(appointmentId, new Callback<Appointment>() {
             @Override
             public void onCallback(List<Appointment> appointmentList) {
+                // Get appointment data
                 List<Appointment> appointments = new ArrayList<>(appointmentList);
-                System.out.println(appointments.size());
+                Appointment appointment = appointments.get(0);
+
+                // Get disease data
+//                Disease disease = appointment.getDisease();
+
 
             }
         });
