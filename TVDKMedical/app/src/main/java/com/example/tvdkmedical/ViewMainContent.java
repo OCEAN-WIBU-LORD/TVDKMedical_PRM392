@@ -69,7 +69,7 @@ public class ViewMainContent extends AppCompatActivity {
                     replaceFragment(new HomeFragment());
                     break;
                 case "Profile":
-                    replaceFragment(new UserProfileFragment());
+                    replaceFragment(new FragmentUserProfile());
                     break;
 
                 case "Appointment":
