@@ -71,6 +71,9 @@ public class ViewMainContent extends AppCompatActivity {
                 case "Profile":
                     replaceFragment(new FragmentUserProfile());
                     break;
+                case "Gemini Analysis":
+                    replaceFragment(new GeminiFragment());
+                    break;
 
                 case "Appointment":
                     replaceFragment(new AppointmentFragment());
