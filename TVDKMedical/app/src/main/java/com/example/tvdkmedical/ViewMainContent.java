@@ -67,11 +67,11 @@ public class ViewMainContent extends AppCompatActivity {
         setContentView(binding.getRoot());
         homeFragment = new HomeFragment();
         userProfileFragment = new UserProfileFragment();
-
+        appointmentFragment = new AppointmentFragment();
         activeFragment = homeFragment;
 
         getSupportFragmentManager().beginTransaction()
-
+                .add(R.id.frame_layout,appointmentFragment,"3").hide(appointmentFragment)
                 .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
                 .add(R.id.frame_layout, homeFragment, "1")
                 .commit();
@@ -86,7 +86,7 @@ public class ViewMainContent extends AppCompatActivity {
                     break;
 
                 case "Appointment":
-                    replaceFragment(new AppointmentFragment());
+                    showFragment(appointmentFragment);
                     break;
                 case "Search":
                     break;

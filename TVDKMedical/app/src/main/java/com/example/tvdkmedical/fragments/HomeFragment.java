@@ -49,7 +49,7 @@ public class HomeFragment extends Fragment {
 
     MaterialButton buttonLogOut;
     FirebaseAuth mAuth;
-    ProgressBar progressBar;
+    //ProgressBar progressBar;
     TextView logOut, profileId, doctorName,dateInfo,timeInfo;
     ImageView doctorImage;
     FirebaseUser userDetails;
@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
         doctorName = rootView.findViewById(R.id.doctor_name);
         dateInfo = rootView.findViewById(R.id.date_info);
         timeInfo = rootView.findViewById(R.id.time_info);
-        progressBar =  getActivity().findViewById(R.id.progress_bar);
+       // progressBar =  getActivity().findViewById(R.id.progress_bar);
 
         userDetails = mAuth.getCurrentUser();
         if (userDetails == null) {
@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment {
         data = new ArrayList<>();
         postAdapter = new PostAdapter(data, getActivity());
         recyclerView.setAdapter(postAdapter);
-        progressBar.setVisibility(View.VISIBLE);
+       // progressBar.setVisibility(View.VISIBLE);
         appointmentDatabase = FirebaseDatabase.getInstance().getReference().child("appointments");
         appointmentDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -150,7 +150,7 @@ public class HomeFragment extends Fragment {
                         timeInfo.setText(timeFormat.format(startDate));
                     }
                 }
-                progressBar.setVisibility(View.GONE);
+               // progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -183,13 +183,13 @@ public class HomeFragment extends Fragment {
                     data.add(post);
                 }
                 postAdapter.notifyDataSetChanged();
-                progressBar.setVisibility(View.GONE);
+               // progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Failed to read data from Firebase.", Toast.LENGTH_SHORT).show();
-                progressBar.setVisibility(View.GONE);
+               // progressBar.setVisibility(View.GONE);
             }
         });
 

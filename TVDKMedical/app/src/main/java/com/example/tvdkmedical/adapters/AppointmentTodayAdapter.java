@@ -1,4 +1,4 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.google.firebase.Timestamp;
@@ -18,13 +19,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAdapter.ViewHolder> {
+public class AppointmentTodayAdapter extends RecyclerView.Adapter<AppointmentTodayAdapter.ViewHolder> {
 
     private Context context;
     private List<Appointment> appointments;
     private List<Doctor> doctors;
 
-    public AllAppointmentAdapter(Context context, List<Appointment> appointments, List<Doctor> doctors) {
+    public AppointmentTodayAdapter(Context context, List<Appointment> appointments, List<Doctor> doctors) {
         this.context = context;
         this.appointments = appointments;
         this.doctors = doctors;
@@ -34,14 +35,14 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.appointment_all, parent, false);
+        View view = inflater.inflate(R.layout.appointment_today, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Appointment a = appointments.get(position);
-        Doctor d = findDoctorById(a.getDoctorId()); // Find the doctor corresponding to the appointment
+        Doctor d = findDoctorById(a.getDoctorId()); // Tìm bác sĩ tương ứng với cuộc hẹn
         holder.setData(a, d);
     }
 
@@ -70,14 +71,12 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         private TextView txtEndTime;
         private TextView txtDoctorName;
         private TextView txtDoctorInfo;
-        private TextView txtDateBooking;
 
         private void bindingView() {
-            txtStartTime = itemView.findViewById(R.id.appointmentStartTime);
-            txtEndTime = itemView.findViewById(R.id.appointmentEndTime);
-            txtDoctorName = itemView.findViewById(R.id.doctorNameAppointment);
-            txtDoctorInfo = itemView.findViewById(R.id.doctorInforAppointment);
-            txtDateBooking = itemView.findViewById(R.id.dateBooking);
+            txtStartTime = itemView.findViewById(R.id.startTime);
+            txtEndTime = itemView.findViewById(R.id.endTime);
+            txtDoctorName = itemView.findViewById(R.id.doctorName);
+            txtDoctorInfo = itemView.findViewById(R.id.doctorInfor);
         }
 
         private void bindingAction() {
@@ -95,7 +94,6 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         public void setData(Appointment appointment, Doctor doctor) {
             txtStartTime.setText(formatTimestampToTime(appointment.getStartTime()));
             txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
-            txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
                 txtDoctorInfo.setText(doctor.getBio());
@@ -108,13 +106,6 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         private String formatTimestampToTime(Timestamp timestamp) {
             Date date = timestamp.toDate();
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            return sdf.format(date);
-        }
-
-
-        private String formatTimestampToDate(Timestamp timestamp) {
-            Date date = timestamp.toDate();
-            SimpleDateFormat sdf = new SimpleDateFormat("EEEE, MMM yyyy", Locale.getDefault());
             return sdf.format(date);
         }
     }

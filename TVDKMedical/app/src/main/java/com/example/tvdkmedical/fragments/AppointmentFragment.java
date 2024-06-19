@@ -13,14 +13,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.tvdkmedical.AllAppointmentAdapter;
-import com.example.tvdkmedical.AppointmentTodayAdapter;
-import com.example.tvdkmedical.Day;
-import com.example.tvdkmedical.DayAdapter;
+import com.example.tvdkmedical.adapters.AllAppointmentAdapter;
+import com.example.tvdkmedical.adapters.AppointmentTodayAdapter;
+import com.example.tvdkmedical.models.Day;
+import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.R;
-import com.example.tvdkmedical.ScheduleActivity;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentCallback;

@@ -1,7 +1,6 @@
 package com.example.tvdkmedical;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -9,28 +8,24 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.adapters.AllAppointmentAdapter;
+import com.example.tvdkmedical.adapters.AppointmentTodayAdapter;
+import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.models.Appointment;
+import com.example.tvdkmedical.models.Day;
 import com.example.tvdkmedical.models.Doctor;
-import com.example.tvdkmedical.models.Users;
 import com.example.tvdkmedical.repositories.AppointmentCallback;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.DoctorCallBack;
 import com.example.tvdkmedical.repositories.DoctorResp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
