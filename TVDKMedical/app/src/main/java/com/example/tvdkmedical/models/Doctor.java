@@ -4,35 +4,36 @@ import java.util.Date;
 
 public class Doctor {
     private String doctorId;
+    private String userId;
     private String bio;
-    private String diseaseId;
-    private String email;
-    private String imageUrl;
+    private String[] diseaseIds;
     private String name;
-    private String office;
-    private String phone;
 
     public Doctor() {
     }
 
-    public Doctor(String doctorId, String bio, String diseaseId, String email, String imageUrl, String name, String office, String phone) {
+    public Doctor(String doctorId, String userId, String bio, String[] diseaseIds, String name) {
         this.doctorId = doctorId;
+        this.userId = userId;
         this.bio = bio;
-        this.diseaseId = diseaseId;
-        this.email = email;
-        this.imageUrl = imageUrl;
+        this.diseaseIds = diseaseIds;
         this.name = name;
-        this.office = office;
-        this.phone = phone;
     }
 
-    // Getters and Setters
     public String getDoctorId() {
         return doctorId;
     }
 
     public void setDoctorId(String doctorId) {
         this.doctorId = doctorId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public String getBio() {
@@ -43,28 +44,12 @@ public class Doctor {
         this.bio = bio;
     }
 
-    public String getDiseaseId() {
-        return diseaseId;
+    public String[] getDiseaseIds() {
+        return diseaseIds;
     }
 
-    public void setDiseaseId(String diseaseId) {
-        this.diseaseId = diseaseId;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setDiseaseIds(String[] diseaseIds) {
+        this.diseaseIds = diseaseIds;
     }
 
     public String getName() {
@@ -73,22 +58,6 @@ public class Doctor {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getOffice() {
-        return office;
-    }
-
-    public void setOffice(String office) {
-        this.office = office;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
     }
 }
 

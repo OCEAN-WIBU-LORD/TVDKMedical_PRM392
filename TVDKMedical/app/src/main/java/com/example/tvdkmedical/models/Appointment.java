@@ -5,18 +5,19 @@ import com.google.firebase.Timestamp;
 
 public class Appointment {
     private String appointmentId;
-    private String diseaseId;
-    private String doctorId;
+    private Timestamp startTime;
     private Timestamp endTime;
     private String note;
-    private Timestamp startTime;
     private String status;
+    private String diseaseId;
+    private String doctorId;
     private String userId;
+    private String[] recordIds; // Array of recordIds
 
     public Appointment() {
     }
 
-    public Appointment(String appointmentId, String diseaseId, String doctorId, Timestamp endTime, String note, Timestamp startTime, String status, String userId) {
+    public Appointment(String appointmentId, String diseaseId, String doctorId, Timestamp endTime, String note, Timestamp startTime, String status, String userId, String[] recordIds) {
         this.appointmentId = appointmentId;
         this.diseaseId = diseaseId;
         this.doctorId = doctorId;
@@ -25,6 +26,7 @@ public class Appointment {
         this.startTime = startTime;
         this.status = status;
         this.userId = userId;
+        this.recordIds = recordIds;
     }
 
     public String getAppointmentId() {
@@ -91,17 +93,11 @@ public class Appointment {
         this.userId = userId;
     }
 
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "appointmentId='" + appointmentId + '\'' +
-                ", diseaseId='" + diseaseId + '\'' +
-                ", doctorId='" + doctorId + '\'' +
-                ", endTime=" + endTime +
-                ", note='" + note + '\'' +
-                ", startTime=" + startTime +
-                ", status='" + status + '\'' +
-                ", userId='" + userId + '\'' +
-                '}';
+    public String[] getRecordIds() {
+        return recordIds;
+    }
+
+    public void setRecordIds(String[] recordIds) {
+        this.recordIds = recordIds;
     }
 }
