@@ -12,12 +12,12 @@ public class Appointment {
     private String diseaseId;
     private String doctorId;
     private String userId;
-    private String[] recordIds; // Array of recordIds
+    private String recordId;
 
     public Appointment() {
     }
 
-    public Appointment(String appointmentId, String diseaseId, String doctorId, Timestamp endTime, String note, Timestamp startTime, String status, String userId, String[] recordIds) {
+    public Appointment(String appointmentId, String diseaseId, String doctorId, Timestamp endTime, String note, Timestamp startTime, String status, String userId, String recordIds) {
         this.appointmentId = appointmentId;
         this.diseaseId = diseaseId;
         this.doctorId = doctorId;
@@ -26,7 +26,7 @@ public class Appointment {
         this.startTime = startTime;
         this.status = status;
         this.userId = userId;
-        this.recordIds = recordIds;
+        this.recordId = recordIds;
     }
 
     public String getAppointmentId() {
@@ -93,11 +93,11 @@ public class Appointment {
         this.userId = userId;
     }
 
-    public String[] getRecordIds() {
-        return recordIds;
+    public String getRecordId() {
+        return recordId;
     }
 
-    public void setRecordIds(String[] recordIds) {
-        this.recordIds = recordIds;
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 }
