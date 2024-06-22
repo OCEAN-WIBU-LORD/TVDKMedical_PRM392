@@ -2,9 +2,12 @@ package com.example.tvdkmedical;
 
 import static com.example.tvdkmedical.R.*;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -31,6 +34,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class LoginActivity extends AppCompatActivity {
 
 
@@ -38,14 +44,20 @@ public class LoginActivity extends AppCompatActivity {
     MaterialButton buttonLogin;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
+    private boolean isPasswordVisible = false;
+    private Timer loginTimer;
     TextView textView;
+
+    private long lastUserInteractionTime; // Store the last interaction timestamp
+    private static final long INACTIVITY_TIMEOUT = 600000000; // 10 minutes in milliseconds
+    private Handler handler; // Handler object for periodic checks
 
     @Override
     public void onStart(){
         super.onStart();
         //check if user is signed in (non-null) and Update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
+        if(currentUser != null && mAuth.getCurrentUser().isEmailVerified()){
             Intent intent = new Intent(getApplicationContext(),ViewMainContent.class);
             startActivity(intent);
             finish();
@@ -64,7 +76,8 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.password);
         buttonLogin = findViewById(R.id.btnLogin);
         progressBar = findViewById(R.id.progressBar);
-
+        handler = new Handler();
+        startInactivityCheck(); // Start periodic checks
 
         // Find the return button by its ID
         ImageButton returnButton = findViewById(R.id.btnReturn);
@@ -75,6 +88,22 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Define the action to be performed when the button is clicked
                 finish(); // This will finish the current activity and go back to the previous one
+            }
+        });
+
+        editTextPassword.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.password_icon, 0);
+
+        editTextPassword.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (editTextPassword.getRight() - editTextPassword.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        togglePasswordVisibility(editTextPassword, true);
+                        return true;
+                    }
+                }
+                return false;
             }
         });
 
@@ -89,6 +118,21 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
                     return;
                 }
+
+                // Start the timer with a 5-minute delay (300 seconds)
+                loginTimer = new Timer();
+                loginTimer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        // Perform timeout action (e.g., display message, reset UI)
+                        Toast.makeText(LoginActivity.this, "Login timed out!", Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        // Optional: reset UI elements like buttons
+                        buttonLogin.setEnabled(true);  // Enable button again
+                    }
+                }, 30000000); // 300 seconds = 5 minutes
+
+                // ... rest of the login code ...
                 if(TextUtils.isEmpty(password)){
                     Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
                     return;
@@ -100,20 +144,20 @@ public class LoginActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if(task.isSuccessful()){
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    if (user != null) {
-                                        String uid = user.getUid();
-                                        // Lưu UID vào SharedPreferences
-                                        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                                        editor.putString("USER_UID", uid);
-                                        editor.apply();
-                                        Toast.makeText(getApplicationContext(), "Login Successful",
+                                    if (loginTimer != null) {
+                                        loginTimer.cancel();
+                                    }
+                                    if(mAuth.getCurrentUser().isEmailVerified()){
+                                        Toast.makeText(getApplicationContext(),"Login Successful",
                                                 Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(getApplicationContext(), ViewMainContent.class);
                                         startActivity(intent);
                                         finish();
+                                    }else{
+                                        Toast.makeText(LoginActivity.this, "Please Verify Email before login.",
+                                                Toast.LENGTH_SHORT).show();
                                     }
+
                                 }else{
                                     Toast.makeText(LoginActivity.this, "Authentication Failed.",
                                             Toast.LENGTH_SHORT).show();
@@ -170,6 +214,43 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    private void startInactivityCheck() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkInactivity();
+                handler.postDelayed(this, 6000000); // Check again in a minute
+            }
+        }, 6000000); // Initial delay of 1 minute
+    }
+
+    private void checkInactivity() {
+        long currentTime = System.currentTimeMillis();
+        long elapsedTime = currentTime - lastUserInteractionTime;
+
+        if (elapsedTime > INACTIVITY_TIMEOUT) {
+            mAuth.signOut();
+            // Inform user about logout (e.g., Toast message, navigate to login)
+            Toast.makeText(LoginActivity.this, "Logged out due to inactivity.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+            startActivity(intent);
+            finish();
+            // Optional: navigate to login screen
+        } else {
+            // User is still active, reset the timer
+            lastUserInteractionTime = currentTime;
+        }
+    }
+
+    // ... other activity methods ...
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Update user interaction time when app goes to background
+        lastUserInteractionTime = System.currentTimeMillis();
+    }
     // Function to open Google app
     // Method to open Google app
     public void openGithubApp(View view) {
@@ -214,6 +295,21 @@ public class LoginActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    private void togglePasswordVisibility(EditText editText, boolean isPasswordField) {
+        if (isPasswordField) {
+            if (isPasswordVisible) {
+                // Hide password
+                editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.password_icon, 0);
+            } else {
+                // Show password
+                editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                editText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.hide_icon, 0);
+            }
+            isPasswordVisible = !isPasswordVisible;
+        }
+        editText.setSelection(editText.length()); // Move cursor to the end
     }
 
 

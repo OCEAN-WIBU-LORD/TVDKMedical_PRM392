@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.tvdkmedical.R;
-import com.example.tvdkmedical.UserProfileActivity;
+import com.example.tvdkmedical.FragmentUserProfile;
 
 
 public class UserProfileFragment extends Fragment {

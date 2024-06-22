@@ -48,6 +48,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+
+
 public class FragmentEditProfile extends Fragment implements DatePickerDialog.OnDateSetListener {
 
     private static final String ARG_PARAM1 = "param1";
@@ -107,7 +109,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
         cancelBtn = view.findViewById(R.id.cancelBtn);
         cccdText = view.findViewById(R.id.cccdText);
         editIcon = view.findViewById(R.id.editIcon);
-//        returnBtn.setOnClickListener(v -> replaceFragment(new com.example.tvdkmedical.FragmentUserProfile()));
+        returnBtn.setOnClickListener(v -> replaceFragment(new com.example.tvdkmedical.FragmentUserProfile()));
         dobText.setOnClickListener(this::showDatePicker);
         editIcon.setOnClickListener(v -> {
 
@@ -135,7 +137,12 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
     private void printError(String error){
         Toast.makeText(getActivity(), "Save Successful", Toast.LENGTH_SHORT).show();
     }
-
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getParentFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.commit();
+    }
     private void openImagePicker() {
         Intent intent = new Intent();
         intent.setType("image/*");

@@ -5,6 +5,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.tvdkmedical.models.Doctor;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -18,7 +19,7 @@ import java.util.List;
 public class DoctorResp {
     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-    public void getDoctors(DoctorCallBack callback) {
+    public void getDoctors(Callback<Doctor> callback) {
         Query query = databaseReference.child("doctors").orderByChild("name");
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

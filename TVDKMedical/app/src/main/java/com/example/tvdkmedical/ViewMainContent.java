@@ -59,6 +59,7 @@ public class ViewMainContent extends AppCompatActivity {
     Fragment appointmentFragment;
     Fragment searchFragment;
     Fragment activeFragment;
+    Fragment geminiFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +67,13 @@ public class ViewMainContent extends AppCompatActivity {
         binding = ActivityViewMainContentBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         homeFragment = new HomeFragment();
-        userProfileFragment = new UserProfileFragment();
+        userProfileFragment = new FragmentUserProfile();
         appointmentFragment = new AppointmentFragment();
+        geminiFragment = new GeminiFragment();
         activeFragment = homeFragment;
 
         getSupportFragmentManager().beginTransaction()
+                .add(R.id.frame_layout,geminiFragment,"4").hide(geminiFragment)
                 .add(R.id.frame_layout,appointmentFragment,"3").hide(appointmentFragment)
                 .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
                 .add(R.id.frame_layout, homeFragment, "1")
@@ -82,7 +85,12 @@ public class ViewMainContent extends AppCompatActivity {
                     showFragment(homeFragment);
                     break;
                 case "Profile":
+
                     showFragment(userProfileFragment);
+
+                    break;
+                case "Gemini Analysis":
+                    showFragment(geminiFragment);
                     break;
 
                 case "Appointment":

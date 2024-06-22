@@ -14,12 +14,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tvdkmedical.FragmentUserProfile;
 import com.example.tvdkmedical.LoginActivity;
 import com.example.tvdkmedical.R;
-import com.example.tvdkmedical.UserProfileActivity;
 import com.example.tvdkmedical.ViewMainContent;
 import com.example.tvdkmedical.adapters.PostAdapter;
 import com.example.tvdkmedical.databinding.ActivityMainBinding;
@@ -59,6 +60,7 @@ public class HomeFragment extends Fragment {
     PostAdapter postAdapter;
     RecyclerView recyclerView;
     List<Post> data;
+    RelativeLayout relativeLayout;
 
     ActivityMainBinding binding;
 
@@ -71,11 +73,11 @@ public class HomeFragment extends Fragment {
         logOut = rootView.findViewById
                 (R.id.logOut);
         //profileId = findViewById(R.id.profileId);
-        appointmentDetailsBtn = rootView.findViewById(R.id.appointmentDetails);
         doctorImage = rootView.findViewById(R.id.doctor_image);
         doctorName = rootView.findViewById(R.id.doctor_name);
         dateInfo = rootView.findViewById(R.id.date_info);
         timeInfo = rootView.findViewById(R.id.time_info);
+        relativeLayout=rootView.findViewById(R.id.relativeLayout);
        // progressBar =  getActivity().findViewById(R.id.progress_bar);
 
         userDetails = mAuth.getCurrentUser();
@@ -101,7 +103,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Appointment nearestAppointment = new Appointment();
+                    Appointment nearestAppointment = null;
                     long now = new Date().getTime();
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
@@ -113,18 +115,22 @@ public class HomeFragment extends Fragment {
                             com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                             int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").getValue(Integer.class));
                             com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
-                            if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
-                                String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
-                                String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
-                                String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
-                                String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
+                            if (startTs.toDate().getTime() > now) {
+                                if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
+                                    String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
+                                    String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
+                                    String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
+                                    String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
 
-                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId);
+                                    nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId);
+                                }
                             }
                         }
                     }
 
                     if (nearestAppointment != null) {
+                        relativeLayout.setVisibility(View.VISIBLE);
+
                         DatabaseReference doctorDatabase = FirebaseDatabase.getInstance().getReference().child("doctors").child(nearestAppointment.getDoctorId());
                         doctorDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -203,25 +209,10 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
             }
         });
-        Button btnProfile1 = rootView.findViewById(R.id.btnProfile);
 
-        // Set OnClickListener to the button
-        btnProfile1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start LoginActivity
-                Intent intent = new Intent(getActivity(), UserProfileActivity.class);
-                startActivity(intent);
-            }
-        });
 
-        appointmentDetailsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AppointmentDetailsActivity.class);
-                startActivity(intent);
-            }
-        });
+
+
         return rootView;
     }
 }
