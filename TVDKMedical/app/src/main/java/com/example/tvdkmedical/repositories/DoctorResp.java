@@ -37,11 +37,7 @@ public class DoctorResp {
                     String imageUrl = childSnapshot.child("imageurl").getValue(String.class);
                     doctor.setDoctorId(doctorId);
                     doctor.setBio(bio);
-                    doctor.setDiseaseId(diseaseId);
-                    doctor.setEmail(email);
                     doctor.setName(name);
-                    doctor.setOffice(office);
-                    //doctor.setPhoneNumber(phoneNumber);
                     doctors.add(doctor);
                 }
 

@@ -116,8 +116,9 @@ public class HomeFragment extends Fragment {
                                 String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
                                 String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
                                 String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
+                                String diseaseId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
 
-                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId);
+                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId,diseaseId);
                             }
                         }
                     }

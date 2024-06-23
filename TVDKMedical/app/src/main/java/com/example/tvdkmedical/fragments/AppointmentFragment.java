@@ -14,16 +14,18 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.tvdkmedical.AllAppointmentAdapter;
-import com.example.tvdkmedical.AppointmentTodayAdapter;
+import com.example.tvdkmedical.adapters.AllAppointmentAdapter;
+import com.example.tvdkmedical.adapters.AppointmentTodayAdapter;
 import com.example.tvdkmedical.Day;
-import com.example.tvdkmedical.DayAdapter;
+import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.example.tvdkmedical.repositories.DoctorResp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
@@ -138,7 +140,7 @@ public class AppointmentFragment extends Fragment implements DayAdapter.OnDayCli
     }
 
     private void loadFakeData() {
-        AppointmentResp appointmentResp = new AppointmentResp();
+            AppointmentResp appointmentResp = new AppointmentResp();
         DoctorResp doctorResp = new DoctorResp();
 
         // Load doctors first
@@ -146,9 +148,9 @@ public class AppointmentFragment extends Fragment implements DayAdapter.OnDayCli
             @Override
             public void onCallback(List<Doctor> doctorList) {
                 doctors = new ArrayList<>(doctorList);
-
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 // Now load appointments
-                appointmentResp.getAppointments(new Callback<Appointment>() {
+                appointmentResp.getAppointments(user.getUid(),new Callback<Appointment>() {
                     @Override
                     public void onCallback(List<Appointment> appointmentList) {
                         appointments = new ArrayList<>(appointmentList);
