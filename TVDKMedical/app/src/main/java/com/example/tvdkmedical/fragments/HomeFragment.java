@@ -99,14 +99,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
-                    Appointment nearestAppointment = new Appointment();
+                    Appointment nearestAppointment = null;
                     long now = new Date().getTime();
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
                         String userId = Objects.requireNonNull(dataSnapshot.child("userId").getValue()).toString();
 
-                        if ("pending".equals(status) && userId.equals(userDetails.getUid())) {
+                        if ("unconfirmed".equals(status) && userId.equals(userDetails.getUid())) {
                             int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").getValue(Integer.class));
                             com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                             int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").getValue(Integer.class));
@@ -116,8 +116,8 @@ public class HomeFragment extends Fragment {
                                 String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
                                 String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
                                 String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
-
-                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId);
+                                String recordId = "0";
+                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId,recordId);
                             }
                         }
                     }
