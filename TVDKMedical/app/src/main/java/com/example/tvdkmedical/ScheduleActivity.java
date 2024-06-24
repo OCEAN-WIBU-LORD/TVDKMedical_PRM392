@@ -25,6 +25,8 @@ import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.example.tvdkmedical.repositories.DoctorResp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
 import java.text.SimpleDateFormat;
@@ -154,9 +156,9 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
             @Override
             public void onCallback(List<Doctor> doctorList) {
                 doctors = new ArrayList<>(doctorList);
-
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 // Now load appointments
-                appointmentResp.getAppointments(new Callback<Appointment>() {
+                appointmentResp.getAppointments(user.getUid(),new Callback<Appointment>() {
                     @Override
                     public void onCallback(List<Appointment> appointmentList) {
                         appointments = new ArrayList<>(appointmentList);

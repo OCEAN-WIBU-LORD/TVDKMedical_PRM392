@@ -44,7 +44,7 @@ public class DoctorResp {
                     String imageUrl = childSnapshot.child("imageurl").getValue(String.class);
                     doctor.setDoctorId(doctorId);
                     doctor.setBio(bio);
-                    doctor.setDiseaseId(Arrays.toString(diseaseIds));
+                    doctor.setDiseaseIds(diseaseIds);
                     //doctor.setEmail(email);
                     doctor.setName(name);
                     //doctor.setOffice(office);
@@ -87,12 +87,10 @@ public class DoctorResp {
                         String[] diseaseIds = diseaseIdsList.toArray(new String[0]);
 
                         if (Arrays.asList(diseaseIds).contains(diseaseId)) {
-                            //String email = childSnapshot.child("email").getValue(String.class);
-                            //String imageUrl = childSnapshot.child("imageUrl").getValue(String.class);
 
                             doctor.setDoctorId(doctorId);
                             doctor.setBio(bio);
-                            doctor.setDiseaseId(Arrays.toString(diseaseIds));
+                            doctor.setDiseaseIds(diseaseIds);
                             //doctor.setEmail(email);
                             doctor.setName(doctorName);
                             //doctor.setImageUrl(imageUrl);

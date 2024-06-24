@@ -110,20 +110,18 @@ public class HomeFragment extends Fragment {
                         String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
                         String userId = Objects.requireNonNull(dataSnapshot.child("userId").getValue()).toString();
 
-                        if ("pending".equals(status) && userId.equals(userDetails.getUid())) {
+                        if ("unconfirmed".equals(status) && userId.equals(userDetails.getUid())) {
                             int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").getValue(Integer.class));
                             com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                             int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").getValue(Integer.class));
                             com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
-                            if (startTs.toDate().getTime() > now) {
-                                if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
-                                    String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
-                                    String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
-                                    String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
-                                    String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
-
-                                    nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId);
-                                }
+                            if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
+                                String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
+                                String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
+                                String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
+                                String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
+                                String recordId = "0";
+                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId,recordId);
                             }
                         }
                     }
