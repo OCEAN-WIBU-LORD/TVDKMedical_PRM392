@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -48,7 +50,7 @@ public class HomeFragment extends Fragment {
 
     MaterialButton buttonLogOut;
     FirebaseAuth mAuth;
-    ProgressBar progressBar;
+    //ProgressBar progressBar;
     TextView logOut, profileId, doctorName,dateInfo,timeInfo;
     ImageView doctorImage;
     FirebaseUser userDetails;
@@ -58,6 +60,7 @@ public class HomeFragment extends Fragment {
     PostAdapter postAdapter;
     RecyclerView recyclerView;
     List<Post> data;
+    RelativeLayout relativeLayout;
 
     ActivityMainBinding binding;
 
@@ -70,11 +73,12 @@ public class HomeFragment extends Fragment {
         logOut = rootView.findViewById
                 (R.id.logOut);
         //profileId = findViewById(R.id.profileId);
-        appointmentDetailsBtn = rootView.findViewById(R.id.appointmentDetails);
         doctorImage = rootView.findViewById(R.id.doctor_image);
         doctorName = rootView.findViewById(R.id.doctor_name);
         dateInfo = rootView.findViewById(R.id.date_info);
         timeInfo = rootView.findViewById(R.id.time_info);
+        relativeLayout=rootView.findViewById(R.id.relativeLayout);
+       // progressBar =  getActivity().findViewById(R.id.progress_bar);
 
         userDetails = mAuth.getCurrentUser();
         if (userDetails == null) {
@@ -93,7 +97,7 @@ public class HomeFragment extends Fragment {
         data = new ArrayList<>();
         postAdapter = new PostAdapter(data, getActivity());
         recyclerView.setAdapter(postAdapter);
-
+       // progressBar.setVisibility(View.VISIBLE);
         appointmentDatabase = FirebaseDatabase.getInstance().getReference().child("appointments");
         appointmentDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -123,6 +127,8 @@ public class HomeFragment extends Fragment {
                     }
 
                     if (nearestAppointment != null) {
+                        relativeLayout.setVisibility(View.VISIBLE);
+
                         DatabaseReference doctorDatabase = FirebaseDatabase.getInstance().getReference().child("doctors").child(nearestAppointment.getDoctorId());
                         doctorDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -130,6 +136,8 @@ public class HomeFragment extends Fragment {
                                 if (doctorSnapshot.exists()) {
                                     String doctorNameStr = Objects.requireNonNull(doctorSnapshot.child("name").getValue()).toString();
                                     doctorName.setText(doctorNameStr);
+                                    String doctorImageUrl = Objects.requireNonNull(doctorSnapshot.child("imageurl").getValue().toString());
+                                    Picasso.get().load(doctorImageUrl).into(doctorImage);
                                 }
                             }
 
@@ -138,13 +146,15 @@ public class HomeFragment extends Fragment {
                                 Toast.makeText(getActivity(), "Failed to read doctor data from Firebase.", Toast.LENGTH_SHORT).show();
                             }
                         });
-                        Date startDate = nearestAppointment.getStartTime().toDate();
+                        System.out.println("aa " + nearestAppointment.getStartTime() + " bb " + nearestAppointment.getEndTime());
+                        Date startDate = nearestAppointment.getEndTime().toDate();
                         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
                         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
                         dateInfo.setText(dateFormat.format(startDate));
                         timeInfo.setText(timeFormat.format(startDate));
                     }
                 }
+               // progressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -177,12 +187,13 @@ public class HomeFragment extends Fragment {
                     data.add(post);
                 }
                 postAdapter.notifyDataSetChanged();
+               // progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(getActivity(), "Failed to read data from Firebase.", Toast.LENGTH_SHORT).show();
-
+               // progressBar.setVisibility(View.GONE);
             }
         });
 
@@ -196,25 +207,10 @@ public class HomeFragment extends Fragment {
                 getActivity().finish();
             }
         });
-        Button btnProfile1 = rootView.findViewById(R.id.btnProfile);
 
-        // Set OnClickListener to the button
-        btnProfile1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Create an Intent to start LoginActivity
-                Intent intent = new Intent(getActivity(), FragmentUserProfile.class);
-                startActivity(intent);
-            }
-        });
 
-        appointmentDetailsBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AppointmentDetailsActivity.class);
-                startActivity(intent);
-            }
-        });
+
+
         return rootView;
     }
 }
