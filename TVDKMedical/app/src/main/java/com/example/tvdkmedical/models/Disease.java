@@ -2,8 +2,8 @@ package com.example.tvdkmedical.models;
 
 public class Disease {
     private String diseaseId;
-    private String description;
     private String name;
+    private String description;
 
     public Disease() {
     }
