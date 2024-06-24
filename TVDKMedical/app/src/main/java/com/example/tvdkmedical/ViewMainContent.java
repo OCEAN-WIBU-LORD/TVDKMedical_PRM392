@@ -30,6 +30,7 @@ import com.example.tvdkmedical.databinding.ActivityViewMainContentBinding;
 import com.example.tvdkmedical.fragments.AppointmentFragment;
 import com.example.tvdkmedical.fragments.HomeFragment;
 import  com.example.tvdkmedical.R;
+import com.example.tvdkmedical.fragments.SearchFragment;
 import com.example.tvdkmedical.fragments.UserProfileFragment;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Post;
@@ -53,14 +54,13 @@ import java.util.Objects;
 
 public class ViewMainContent extends AppCompatActivity {
 
-      ActivityViewMainContentBinding binding;
+    ActivityViewMainContentBinding binding;
     Fragment homeFragment;
     Fragment userProfileFragment;
     Fragment appointmentFragment;
     Fragment searchFragment;
     Fragment activeFragment;
     Fragment geminiFragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,9 +70,12 @@ public class ViewMainContent extends AppCompatActivity {
         userProfileFragment = new FragmentUserProfile();
         appointmentFragment = new AppointmentFragment();
         geminiFragment = new GeminiFragment();
+        searchFragment = new SearchFragment();
+
         activeFragment = homeFragment;
 
         getSupportFragmentManager().beginTransaction()
+                .add(R.id.frame_layout,searchFragment,"5").hide(searchFragment)
                 .add(R.id.frame_layout,geminiFragment,"4").hide(geminiFragment)
                 .add(R.id.frame_layout,appointmentFragment,"3").hide(appointmentFragment)
                 .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
@@ -97,6 +100,7 @@ public class ViewMainContent extends AppCompatActivity {
                     showFragment(appointmentFragment);
                     break;
                 case "Search":
+                    showFragment(searchFragment);
                     break;
                 default:
                     break;
