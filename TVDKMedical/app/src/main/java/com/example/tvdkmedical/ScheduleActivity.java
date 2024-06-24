@@ -97,7 +97,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
     }
 
     private void initRecyclerView() {
-        adapter = new DayAdapter(this, days, this);
+        adapter = new DayAdapter(this, days, this::onDayClick);
         rcv.setAdapter(adapter);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         rcv.setLayoutManager(layoutManager);
