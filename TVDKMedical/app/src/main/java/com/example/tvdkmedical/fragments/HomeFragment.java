@@ -111,9 +111,9 @@ public class HomeFragment extends Fragment {
                         String userId = Objects.requireNonNull(dataSnapshot.child("userId").getValue()).toString();
 
                         if ("unconfirmed".equals(status) && userId.equals(userDetails.getUid())) {
-                            int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").getValue(Integer.class));
+                            int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").child("seconds").getValue(Integer.class));
                             com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
-                            int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").getValue(Integer.class));
+                            int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").child("seconds").getValue(Integer.class));
                             com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                             if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
                                 String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
