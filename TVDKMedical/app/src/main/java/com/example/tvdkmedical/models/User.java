@@ -101,4 +101,8 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
+
+    public boolean isDoctor() {
+        return role.equals("doctor");
+    }
 }

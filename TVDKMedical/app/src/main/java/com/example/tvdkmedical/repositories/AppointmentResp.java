@@ -35,11 +35,11 @@ public class AppointmentResp {
                     appointment.setUserId(Objects.requireNonNull(childSnapshot.child("userId").getValue()).toString());
                     appointment.setRecordId(Objects.requireNonNull(childSnapshot.child("recordId").getValue()).toString());
 
-                    int endTime = Objects.requireNonNull(childSnapshot.child("endTime").getValue(Integer.class));
+                    int endTime = Objects.requireNonNull(childSnapshot.child("endTime").child("seconds").getValue(Integer.class));
                     com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                     appointment.setEndTime(endTs);
 
-                    int startTime = Objects.requireNonNull(childSnapshot.child("startTime").getValue(Integer.class));
+                    int startTime = Objects.requireNonNull(childSnapshot.child("startTime").child("seconds").getValue(Integer.class));
                     com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                     appointment.setStartTime(startTs);
 
@@ -72,11 +72,11 @@ public class AppointmentResp {
                 appointment.setUserId(Objects.requireNonNull(snapshot.child("userId").getValue()).toString());
                 appointment.setRecordId(Objects.requireNonNull(snapshot.child("recordId").getValue()).toString());
 
-                int endTime = Objects.requireNonNull(snapshot.child("endTime").getValue(Integer.class));
+                int endTime = Objects.requireNonNull(snapshot.child("endTime").child("seconds").getValue(Integer.class));
                 com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                 appointment.setEndTime(endTs);
 
-                int startTime = Objects.requireNonNull(snapshot.child("startTime").getValue(Integer.class));
+                int startTime = Objects.requireNonNull(snapshot.child("startTime").child("seconds").getValue(Integer.class));
                 com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                 appointment.setStartTime(startTs);
 
@@ -156,11 +156,11 @@ public class AppointmentResp {
                     appointment.setUserId(childSnapshot.child("userId").getValue(String.class));
                     appointment.setRecordId(childSnapshot.child("recordId").getValue(String.class));
 
-                    int endTime = childSnapshot.child("endTime").getValue(Integer.class);
+                    int endTime = childSnapshot.child("endTime").child("seconds").getValue(Integer.class);
                     com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                     appointment.setEndTime(endTs);
 
-                    int startTime = childSnapshot.child("startTime").getValue(Integer.class);
+                    int startTime = childSnapshot.child("startTime").child("seconds").getValue(Integer.class);
                     com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                     appointment.setStartTime(startTs);
 

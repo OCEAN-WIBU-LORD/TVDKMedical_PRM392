@@ -93,4 +93,15 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="disease">Disease</string>
+    <string name="record_list">Record List</string>
+    <string name="no_records">No records yet</string>
+    <string name="reschedule">Reschedule</string>
+    <string name="cancel">Cancel</string>
+    <string name="publish_result">Publish Results\n</string>
+    <string name="publish_results">Publish Results</string>
+    <string name="publish">Publish</string>
+    <string name="treatment">Treatment</string>
+    <string name="diagnosis">Diagnosis</string>
+    <string name="medical_record">Medical Record</string>
 </resources>

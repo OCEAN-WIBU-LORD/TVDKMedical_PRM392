@@ -32,7 +32,7 @@ public class RecordResp {
                 record.setRecordId(Objects.requireNonNull(snapshot.getKey()));
                 record.setDiagnosis(Objects.requireNonNull(snapshot.child("diagnosis").getValue()).toString());
                 record.setTreatment(Objects.requireNonNull(snapshot.child("treatment").getValue()).toString());
-                int date = Objects.requireNonNull(snapshot.child("date").getValue(Integer.class));
+                int date = Objects.requireNonNull(snapshot.child("date").child("seconds").getValue(Integer.class));
                 com.google.firebase.Timestamp dateTimestamp = new com.google.firebase.Timestamp(date, 0);
                 record.setDate(dateTimestamp);
 

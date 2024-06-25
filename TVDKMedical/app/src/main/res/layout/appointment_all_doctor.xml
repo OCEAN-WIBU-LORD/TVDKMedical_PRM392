@@ -41,7 +41,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:text="Monday, Dec 23"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/imageView5"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -62,7 +61,6 @@
                 android:layout_height="22dp"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="8dp"
-                android:text="12:00"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/imageView6"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -72,7 +70,6 @@
                 android:layout_width="42dp"
                 android:layout_height="22dp"
                 android:layout_marginTop="8dp"
-                android:text="13:00"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/textView4"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -120,8 +117,7 @@
             android:layout_marginEnd="20dp"
             android:background="@drawable/avatar_rounded"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/avatar" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/btnReschedule"
@@ -129,7 +125,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/rounded_button"
-            android:text="Reschedule"
+            android:text="@string/reschedule"
             android:textColor="@color/white"
             app:layout_constraintEnd_toStartOf="@+id/btnCancel"
             app:layout_constraintHorizontal_bias="0.5"
@@ -142,7 +138,7 @@
             android:layout_height="46dp"
             android:layout_marginTop="8dp"
             android:background="@drawable/rounded_button_white"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
