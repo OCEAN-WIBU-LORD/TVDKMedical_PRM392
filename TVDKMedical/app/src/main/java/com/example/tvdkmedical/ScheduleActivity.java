@@ -22,12 +22,17 @@ import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Day;
 import com.example.tvdkmedical.models.Doctor;
 
+import com.example.tvdkmedical.models.Record;
 import com.example.tvdkmedical.repositories.AppointmentResp;
+import com.example.tvdkmedical.repositories.RecordResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.example.tvdkmedical.repositories.DoctorResp;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
+
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,7 +71,6 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
         days = new ArrayList<>();
         appointments = new ArrayList<>();
         setCurrentDate();
-
         initSpinner();
         initRecyclerView();
         initRecyclerViewAppointmentToday();
@@ -102,7 +106,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
     }
 
     private void initRecyclerView() {
-        adapter = new DayAdapter(this, days, this);
+        adapter = new DayAdapter(this, days, this::onDayClick);
         rcv.setAdapter(adapter);
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
         rcv.setLayoutManager(layoutManager);
