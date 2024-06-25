@@ -1,4 +1,4 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.models;
 
 public class Day {
     private String day;

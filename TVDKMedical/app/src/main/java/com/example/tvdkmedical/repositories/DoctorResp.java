@@ -76,8 +76,8 @@ public class DoctorResp {
                         String doctorId = childSnapshot.getKey();
                         String bio = childSnapshot.child("bio").getValue(String.class);
                         List<String> diseaseIdsList = new ArrayList<>();
-                        if (childSnapshot.hasChild("diseaseIds")) {
-                            for (DataSnapshot diseaseIdSnapshot : childSnapshot.child("diseaseIds").getChildren()) {
+                        if (childSnapshot.hasChild("diseaseId")) {
+                            for (DataSnapshot diseaseIdSnapshot : childSnapshot.child("diseaseId").getChildren()) {
                                 String dId = diseaseIdSnapshot.getValue(String.class);
                                 if (dId != null) {
                                     diseaseIdsList.add(dId);
@@ -87,8 +87,6 @@ public class DoctorResp {
                         String[] diseaseIds = diseaseIdsList.toArray(new String[0]);
 
                         if (Arrays.asList(diseaseIds).contains(diseaseId)) {
-                            String email = childSnapshot.child("email").getValue(String.class);
-                            String imageUrl = childSnapshot.child("imageUrl").getValue(String.class);
 
                             doctor.setDoctorId(doctorId);
                             doctor.setBio(bio);

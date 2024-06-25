@@ -1,4 +1,4 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;

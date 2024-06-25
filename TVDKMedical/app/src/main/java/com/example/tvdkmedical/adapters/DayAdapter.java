@@ -1,12 +1,18 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.tvdkmedical.models.Day;
+import com.example.tvdkmedical.R;
+
 import java.util.List;
 
 public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {

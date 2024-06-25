@@ -15,7 +15,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.models.Appointment;
+import com.example.tvdkmedical.models.Day;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.DoctorResp;
