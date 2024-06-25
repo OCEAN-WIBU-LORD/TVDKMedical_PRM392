@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,14 +15,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tvdkmedical.adapters.DayAdapter;
+import com.example.tvdkmedical.adapters.TimeAdapter;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Day;
-import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
-import com.example.tvdkmedical.repositories.DoctorResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
