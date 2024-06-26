@@ -37,7 +37,8 @@ public class DoctorResp {
                         String diseaseId = diseaseIdSnapshot.getValue(String.class);
                         diseaseIdsList.add(diseaseId);
                     }
-                    String[] diseaseIds = diseaseIdsList.toArray(new String[0]);                    String email = childSnapshot.child("email").getValue(String.class);
+                    String[] diseaseIds = diseaseIdsList.toArray(new String[0]);
+                    String email = childSnapshot.child("email").getValue(String.class);
                     String name = childSnapshot.child("name").getValue(String.class);
                     String office = childSnapshot.child("office").getValue(String.class);
                     Long phoneNumber = childSnapshot.child("phoneNumber").getValue(Long.class);
@@ -53,6 +54,42 @@ public class DoctorResp {
                 }
 
                 Log.d("DoctorResp", "Number of doctors fetched: " + doctors.size());
+                callback.onCallback(doctors);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("DoctorResp", "Error: " + error.getMessage());
+            }
+        });
+    }
+
+    // Get doctor by id
+    public void getDoctorById(String doctorId, Callback<Doctor> callback) {
+        databaseReference.child("doctors").child(doctorId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Doctor doctor = new Doctor();
+                String bio = snapshot.child("bio").getValue(String.class);
+                Iterable<DataSnapshot> diseaseIdSnapshots = snapshot.child("diseaseId").getChildren();
+                List<String> diseaseIdsList = new ArrayList<>();
+                for (DataSnapshot diseaseIdSnapshot : diseaseIdSnapshots) {
+                    String diseaseId = diseaseIdSnapshot.getValue(String.class);
+                    diseaseIdsList.add(diseaseId);
+                }
+                String[] diseaseIds = diseaseIdsList.toArray(new String[0]);
+                String email = snapshot.child("email").getValue(String.class);
+                String name = snapshot.child("name").getValue(String.class);
+                String office = snapshot.child("office").getValue(String.class);
+                Long phoneNumber = snapshot.child("phoneNumber").getValue(Long.class);
+                String imageUrl = snapshot.child("imageurl").getValue(String.class);
+                doctor.setDoctorId(doctorId);
+                doctor.setBio(bio);
+                doctor.setDiseaseIds(diseaseIds);
+                doctor.setName(name);
+
+                List<Doctor> doctors = new ArrayList<>();
+                doctors.add(doctor);
                 callback.onCallback(doctors);
             }
 

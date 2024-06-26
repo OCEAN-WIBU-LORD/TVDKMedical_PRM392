@@ -94,7 +94,7 @@ public class AppointmentFragment extends Fragment implements DayAdapter.OnDayCli
     }
 
     private void initRecyclerView() {
-        adapter = new DayAdapter(getContext(), days, this);
+        adapter = new DayAdapter(getContext(), days, this::onDayClick);
         rcv.setAdapter(adapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1, GridLayoutManager.HORIZONTAL, false);
         rcv.setLayoutManager(layoutManager);

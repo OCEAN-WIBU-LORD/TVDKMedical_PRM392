@@ -8,8 +8,8 @@
         tools:context=".views.appointment.AppointmentDetailsActivity">
 
     <include
-            android:id="@+id/appointment_all"
-            layout="@layout/appointment_all"
+            android:id="@+id/appointment_all_doctor"
+            layout="@layout/appointment_all_doctor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:layout_constraintTop_toBottomOf="@id/appointment_all" />
+            app:layout_constraintTop_toBottomOf="@id/appointment_all_doctor" />
 
     <include
             android:id="@+id/record_list"

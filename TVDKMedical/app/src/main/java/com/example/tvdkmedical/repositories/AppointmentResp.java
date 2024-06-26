@@ -35,11 +35,11 @@ public class AppointmentResp {
                     appointment.setUserId(Objects.requireNonNull(childSnapshot.child("userId").getValue()).toString());
                     appointment.setRecordId(Objects.requireNonNull(childSnapshot.child("recordId").getValue()).toString());
 
-                    int endTime = Objects.requireNonNull(childSnapshot.child("endTime").getValue(Integer.class));
+                    int endTime = Objects.requireNonNull(childSnapshot.child("endTime").child("seconds").getValue(Integer.class));
                     com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                     appointment.setEndTime(endTs);
 
-                    int startTime = Objects.requireNonNull(childSnapshot.child("startTime").getValue(Integer.class));
+                    int startTime = Objects.requireNonNull(childSnapshot.child("startTime").child("seconds").getValue(Integer.class));
                     com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                     appointment.setStartTime(startTs);
 
@@ -72,11 +72,11 @@ public class AppointmentResp {
                 appointment.setUserId(Objects.requireNonNull(snapshot.child("userId").getValue()).toString());
                 appointment.setRecordId(Objects.requireNonNull(snapshot.child("recordId").getValue()).toString());
 
-                int endTime = Objects.requireNonNull(snapshot.child("endTime").getValue(Integer.class));
+                int endTime = Objects.requireNonNull(snapshot.child("endTime").child("seconds").getValue(Integer.class));
                 com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
                 appointment.setEndTime(endTs);
 
-                int startTime = Objects.requireNonNull(snapshot.child("startTime").getValue(Integer.class));
+                int startTime = Objects.requireNonNull(snapshot.child("startTime").child("seconds").getValue(Integer.class));
                 com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
                 appointment.setStartTime(startTs);
 
@@ -132,4 +132,51 @@ public class AppointmentResp {
             }
         });
     }
+
+    // Check doctor and time to add Appointment
+    public void getAppointmentsByDoctorAndTime(String doctorId, long timestamp, Callback<Appointment> callback) {
+
+        long endTime = timestamp + 86400;
+
+        Query query = databaseReference.child("appointments")
+                .orderByChild("doctorId")
+                .equalTo(doctorId);
+
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Appointment> appointments = new ArrayList<>();
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    Appointment appointment = new Appointment();
+                    appointment.setAppointmentId(childSnapshot.getKey());
+                    appointment.setDiseaseId(childSnapshot.child("diseaseId").getValue(String.class));
+                    appointment.setDoctorId(childSnapshot.child("doctorId").getValue(String.class));
+                    appointment.setNote(childSnapshot.child("note").getValue(String.class));
+                    appointment.setStatus(childSnapshot.child("status").getValue(String.class));
+                    appointment.setUserId(childSnapshot.child("userId").getValue(String.class));
+                    appointment.setRecordId(childSnapshot.child("recordId").getValue(String.class));
+
+                    int endTime = childSnapshot.child("endTime").child("seconds").getValue(Integer.class);
+                    com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
+                    appointment.setEndTime(endTs);
+
+                    int startTime = childSnapshot.child("startTime").child("seconds").getValue(Integer.class);
+                    com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
+                    appointment.setStartTime(startTs);
+
+                    if (Long.parseLong(String.valueOf(startTime)) >= timestamp && Long.parseLong(String.valueOf(startTime)) <= (timestamp + 86400)) {
+                        appointments.add(appointment);
+                    }
+                }
+
+                callback.onCallback(appointments);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("Error: " + error.getMessage());
+            }
+        });
+    }
+
 }

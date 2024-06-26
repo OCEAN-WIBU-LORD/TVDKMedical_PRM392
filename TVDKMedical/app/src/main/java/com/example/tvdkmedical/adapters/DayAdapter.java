@@ -1,6 +1,5 @@
 package com.example.tvdkmedical.adapters;
 
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.tvdkmedical.models.Day;
 import com.example.tvdkmedical.R;
 
@@ -21,15 +21,20 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
     private List<Day> days;
     private int selectedItem = RecyclerView.NO_POSITION;
     private OnDayClickListener onDayClickListener;
+    private OnAddDayClickListener onAddDayClickListener;
 
     public interface OnDayClickListener {
         void onDayClick(int position, Day day);
     }
 
-    public DayAdapter(Context context, List<Day> days, OnDayClickListener onDayClickListener) {
+    public interface OnAddDayClickListener {
+        void onAddDayClick(int position, Day day);
+    }
+
+    public DayAdapter(Context context, List<Day> days, OnAddDayClickListener onAddDayClickListener) {
         this.context = context;
         this.days = days;
-        this.onDayClickListener = onDayClickListener;
+        this.onAddDayClickListener = onAddDayClickListener;
     }
 
     @NonNull
@@ -76,6 +81,10 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
             if (onDayClickListener != null) {
                 onDayClickListener.onDayClick(position, day);
             }
+
+            if (onAddDayClickListener != null) {
+                onAddDayClickListener.onAddDayClick(position, day);
+            }
         });
     }
 
@@ -104,5 +113,3 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         }
     }
 }
-
-
