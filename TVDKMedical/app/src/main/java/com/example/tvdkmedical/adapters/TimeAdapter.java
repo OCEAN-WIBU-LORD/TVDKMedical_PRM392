@@ -17,8 +17,8 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.VH> {
 
     private Context context;
     private List<String> times;
-    private List<String> disabledTimes; // Danh sách giờ không thể chọn
-    private int selectedItem = RecyclerView.NO_POSITION; // Vị trí item được chọn, ban đầu không có item nào được chọn
+    private List<String> disabledTimes; // List of disabled times
+    private int selectedItem = RecyclerView.NO_POSITION; // Selected item position, initially no item selected
 
     public TimeAdapter(Context context, List<String> times) {
         this.context = context;
@@ -27,12 +27,12 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.VH> {
 
     public void setTimes(List<String> times) {
         this.times = times;
-        notifyDataSetChanged(); // Cập nhật lại RecyclerView khi danh sách giờ có thể chọn thay đổi
+        notifyDataSetChanged(); // Update RecyclerView when selectable times list changes
     }
 
     public void setDisabledTimes(List<String> disabledTimes) {
         this.disabledTimes = disabledTimes;
-        notifyDataSetChanged(); // Cập nhật lại RecyclerView khi danh sách giờ không thể chọn thay đổi
+        notifyDataSetChanged(); // Update RecyclerView when disabled times list changes
     }
 
     @NonNull
@@ -44,8 +44,6 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.VH> {
         layoutParams.width = (int) (parent.getWidth() / 4.0f);
         view.setLayoutParams(layoutParams);
         return new VH(view);
-
-
     }
 
     @Override
@@ -53,28 +51,28 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.VH> {
         String time = times.get(position);
         holder.setData(time);
 
-        // Kiểm tra nếu thời gian đang được xem xét là thời gian không thể chọn
+        // Check if the time is in disabled list
         if (disabledTimes != null && disabledTimes.contains(time)) {
-            holder.setEnabled(false); // Vô hiệu hóa item trong trường hợp không thể chọn
+            holder.setEnabled(false); // Disable item if it's in disabled list
         } else {
             holder.setEnabled(true);
         }
 
-        // Kiểm tra xem item có phải là item được chọn hay không
+        // Check if the item is selected or not
         if (position == selectedItem) {
-            holder.setSelected(true); // Đặt background màu xanh, chữ màu trắng
+            holder.setSelected(true); // Set background color to blue, text color to white
         } else {
-            holder.setSelected(false); // Đặt lại background mặc định
+            holder.setSelected(false); // Reset to default background
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Lưu vị trí item được chọn
+                // Save selected item position
                 int previousSelectedItem = selectedItem;
                 selectedItem = holder.getAdapterPosition();
 
-                // Thông báo cập nhật lại giao diện cho item được chọn và item trước đó
+                // Notify to update UI for selected and previously selected item
                 notifyItemChanged(selectedItem);
                 notifyItemChanged(previousSelectedItem);
             }
@@ -84,6 +82,10 @@ public class TimeAdapter extends RecyclerView.Adapter<TimeAdapter.VH> {
     @Override
     public int getItemCount() {
         return times.size();
+    }
+
+    public int getSelectedTimePosition() {
+        return selectedItem;
     }
 
     protected class VH extends RecyclerView.ViewHolder {

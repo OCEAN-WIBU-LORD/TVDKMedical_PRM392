@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +40,7 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
     private DayAdapter adapter;
     private TimeAdapter timeAdapter;
     private int selectedMonth;
+    private Button btnBookAppointment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
         spinnerMonths = findViewById(R.id.monthSpinner);
         rcv = findViewById(R.id.rcvDay);
         rcvTime = findViewById(R.id.rcvTime);
+        btnBookAppointment = findViewById(R.id.btnBookAppointment);
         days = new ArrayList<>();
         assignData();
         initSpinner();
@@ -58,6 +62,32 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        btnBookAppointment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Lấy thông tin từ RecyclerView rcv
+                int selectedDayPosition = adapter.getSelectedDayPosition(); // Giả sử bạn có method này trong DayAdapter
+                if (selectedDayPosition != RecyclerView.NO_POSITION) {
+                    Day selectedDay = days.get(selectedDayPosition);
+                    String selectedDayText = selectedDay.getDay();
+
+                    // Lấy thông tin từ RecyclerView rcvTime
+                    int selectedTimePosition = timeAdapter.getSelectedTimePosition(); // Giả sử bạn có method này trong TimeAdapter
+                    if (selectedTimePosition != RecyclerView.NO_POSITION) {
+                        String selectedTime = times.get(selectedTimePosition);
+
+                        // Hiển thị thông tin trong Toast
+                        Toast.makeText(AddAppointment.this, "Selected Day: " + selectedDayText + ", Selected Time: " + selectedTime, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(AddAppointment.this, "Please select a time", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(AddAppointment.this, "Please select a day", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     private void assignData() {
@@ -164,7 +194,4 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
             }
         });
     }
-
-
-
 }
