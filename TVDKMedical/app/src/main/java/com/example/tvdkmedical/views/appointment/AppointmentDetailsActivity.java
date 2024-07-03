@@ -190,6 +190,8 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                     // Do nothing
                 }
             });
+        } else {
+            spinnerStatus.setEnabled(false);
         }
     }
 
@@ -249,27 +251,29 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onCallback(List<Record> recordList) {
+                Record record;
                 // Initialize the RecyclerView inside the disease_list layout
                 if (recordList.isEmpty()) {
+                    record = new Record();
                     noRecords.setVisibility(View.VISIBLE);
                     rvRecords.setVisibility(View.GONE);
                     btnAddRecord.setText("Publish Result");
-                    return;
+                } else {
+                    record = recordList.get(0);
+
+                    noRecords.setVisibility(View.GONE);
+                    try {
+                        recordAdapter = new RecordAdapter(recordList);
+                    } catch (JSONException e) {
+                        throw new RuntimeException(e);
+                    }
+                    rvRecords.setAdapter(recordAdapter);
+                    rvRecords.setLayoutManager(new LinearLayoutManager(AppointmentDetailsActivity.this));
+
+                    // Handle the click event of the Add Record button
+                    btnAddRecord.setText("Update Result");
                 }
 
-                Record record = recordList.get(0);
-
-                noRecords.setVisibility(View.GONE);
-                try {
-                    recordAdapter = new RecordAdapter(recordList);
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-                rvRecords.setAdapter(recordAdapter);
-                rvRecords.setLayoutManager(new LinearLayoutManager(AppointmentDetailsActivity.this));
-
-                // Handle the click event of the Add Record button
-                btnAddRecord.setText("Update Result");
                 btnAddRecord.setOnClickListener(v -> {
                     // Show a popup to update the results
                     LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
