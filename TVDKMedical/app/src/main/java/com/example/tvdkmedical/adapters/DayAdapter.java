@@ -22,6 +22,14 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
     private OnDayClickListener onDayClickListener;
     private OnAddDayClickListener onAddDayClickListener;
 
+   public void clearSelection() {
+    // Assuming you have a way to track the selected state in your Day model or adapter
+    // Reset the selected state for all days
+       selectedItem = RecyclerView.NO_POSITION;
+
+       notifyDataSetChanged(); // Notify the adapter to refresh the views
+    }
+
     public interface OnDayClickListener {
         void onDayClick(int position, Day day);
     }
@@ -34,6 +42,13 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         this.context = context;
         this.days = days;
         this.onAddDayClickListener = onAddDayClickListener;
+    }
+    public DayAdapter(Context context, List<Day> days, OnAddDayClickListener onAddDayClickListener,int selectedItem) {
+        this.context = context;
+        this.days = days;
+        this.onAddDayClickListener = onAddDayClickListener;
+        this.selectedItem = selectedItem;
+
     }
 
     @NonNull
@@ -85,6 +100,8 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
                 onAddDayClickListener.onAddDayClick(position, day);
             }
         });
+
+
     }
 
     @Override
