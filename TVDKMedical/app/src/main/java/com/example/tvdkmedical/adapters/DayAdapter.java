@@ -8,10 +8,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
-import com.example.tvdkmedical.models.Day;
+
 import com.example.tvdkmedical.R;
+import com.example.tvdkmedical.models.Day;
 
 import java.util.List;
 
@@ -68,7 +67,7 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         Day day = days.get(position);
         holder.setData(day);
 
-        // Đặt màu nền và màu chữ dựa trên vị trí của item
+        // Set background color and text color based on item position
         if (position == selectedItem) {
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
             holder.txtDay.setTextColor(context.getResources().getColor(R.color.colorBlue));
@@ -84,15 +83,15 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         }
 
         holder.itemView.setOnClickListener(v -> {
-            // Lưu vị trí của item được chọn
+            // Save selected item position
             int previousItem = selectedItem;
             selectedItem = holder.getAdapterPosition();
 
-            // Cập nhật item trước đó và item mới được chọn
+            // Update previous and current selected item views
             notifyItemChanged(previousItem);
             notifyItemChanged(selectedItem);
 
-            // Gọi sự kiện nhấp chuột
+            // Call click event listener
             if (onDayClickListener != null) {
                 onDayClickListener.onDayClick(position, day);
             }
@@ -110,18 +109,25 @@ public class DayAdapter extends RecyclerView.Adapter<DayAdapter.VH> {
         return days.size();
     }
 
-    protected class VH extends RecyclerView.ViewHolder {
+    public int getSelectedDayPosition() {
+        return selectedItem;
+    }
+
+    public Day getSelectedDay() {
+        if (selectedItem != RecyclerView.NO_POSITION && selectedItem < days.size()) {
+            return days.get(selectedItem);
+        }
+        return null;
+    }
+
+    protected static class VH extends RecyclerView.ViewHolder {
         private TextView txtDay;
         private TextView txtDayOfWeek;
 
-        private void bindingView() {
-            txtDay = itemView.findViewById(R.id.txtDay);
-            txtDayOfWeek = itemView.findViewById(R.id.txtDayofWeek);
-        }
-
         public VH(@NonNull View v) {
             super(v);
-            bindingView();
+            txtDay = v.findViewById(R.id.txtDay);
+            txtDayOfWeek = v.findViewById(R.id.txtDayofWeek);
         }
 
         public void setData(Day day) {
