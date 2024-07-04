@@ -147,5 +147,50 @@ public class DoctorResp {
         });
     }
 
+    public void getDoctorByUserId(String userId, Callback<Doctor> callback) {
+        DatabaseReference doctorsRef = FirebaseDatabase.getInstance().getReference().child("doctors");
 
+        doctorsRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Doctor> data = new ArrayList<>();
+                Doctor doctor = null;
+                for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                    String doctorId = childSnapshot.getKey(); // Assuming doctorId is the key of each doctor node
+                    String currentUserId = childSnapshot.child("userId").getValue(String.class);
+                    if (userId.equals(currentUserId)) {
+                        String bio = childSnapshot.child("bio").getValue(String.class);
+                        Iterable<DataSnapshot> diseaseIdSnapshots = childSnapshot.child("diseaseId").getChildren();
+                        List<String> diseaseIdsList = new ArrayList<>();
+                        for (DataSnapshot diseaseIdSnapshot : diseaseIdSnapshots) {
+                            String diseaseId = diseaseIdSnapshot.getValue(String.class);
+                            diseaseIdsList.add(diseaseId);
+                        }
+                        String[] diseaseIds = diseaseIdsList.toArray(new String[0]);
+                        String email = childSnapshot.child("email").getValue(String.class);
+                        String name = childSnapshot.child("name").getValue(String.class);
+                        String office = childSnapshot.child("office").getValue(String.class);
+                        Long phoneNumber = childSnapshot.child("phoneNumber").getValue(Long.class);
+                        String imageUrl = childSnapshot.child("imageurl").getValue(String.class);
+
+                        doctor = new Doctor();
+                        doctor.setDoctorId(doctorId);
+                        doctor.setUserId(userId); // Assuming you want to set userId in Doctor object
+                        doctor.setBio(bio);
+                        doctor.setDiseaseIds(diseaseIds);
+                        doctor.setName(name);
+                        data.add(doctor);
+                        break; // Exit loop after finding the matching doctor
+                    }
+                }
+                callback.onCallback(data); // Callback with found doctor or null if not found
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("DoctorResp", "Error: " + error.getMessage());
+                callback.onCallback(null); // Handle cancellation by returning null
+            }
+        });
+    }
 }

@@ -28,6 +28,7 @@ import com.example.tvdkmedical.adapters.PostAdapter;
 import com.example.tvdkmedical.databinding.ActivityMainBinding;
 import com.example.tvdkmedical.databinding.ActivityViewMainContentBinding;
 import com.example.tvdkmedical.fragments.AppointmentFragment;
+import com.example.tvdkmedical.fragments.AppointmentListDoctorFragment;
 import com.example.tvdkmedical.fragments.HomeFragment;
 import  com.example.tvdkmedical.R;
 import com.example.tvdkmedical.fragments.SearchFragment;
@@ -61,6 +62,7 @@ public class ViewMainContent extends AppCompatActivity {
     Fragment searchFragment;
     Fragment activeFragment;
     Fragment geminiFragment;
+    Fragment appointmentListDoctorFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,10 +73,11 @@ public class ViewMainContent extends AppCompatActivity {
         appointmentFragment = new AppointmentFragment();
         geminiFragment = new GeminiFragment();
         searchFragment = new SearchFragment();
-
+        //appointmentListDoctorFragment = new AppointmentListDoctorFragment();
         activeFragment = homeFragment;
 
         getSupportFragmentManager().beginTransaction()
+               // .add(R.id.frame_layout,appointmentListDoctorFragment,"6").hide(appointmentListDoctorFragment)
                 .add(R.id.frame_layout,searchFragment,"5").hide(searchFragment)
                 .add(R.id.frame_layout,geminiFragment,"4").hide(geminiFragment)
                 .add(R.id.frame_layout,appointmentFragment,"3").hide(appointmentFragment)
@@ -99,6 +102,8 @@ public class ViewMainContent extends AppCompatActivity {
                 case "Appointment":
                     showFragment(appointmentFragment);
                     break;
+//                    showFragment(appointmentListDoctorFragment);
+//                    break;
                 case "Search":
                     showFragment(searchFragment);
                     break;

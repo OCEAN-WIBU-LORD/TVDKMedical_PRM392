@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,25 +108,27 @@ public class HomeFragment extends Fragment {
                     long now = new Date().getTime();
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        String status = Objects.requireNonNull(dataSnapshot.child("status").getValue()).toString();
-                        String userId = Objects.requireNonNull(dataSnapshot.child("userId").getValue()).toString();
-
+                        String status = dataSnapshot.hasChild("status") && dataSnapshot.child("status").getValue() != null ? dataSnapshot.child("status").getValue().toString() : "";
+                        String userId = dataSnapshot.hasChild("userId") && dataSnapshot.child("userId").getValue() != null ? dataSnapshot.child("userId").getValue().toString() : "";
                         if ("unconfirmed".equals(status) && userId.equals(userDetails.getUid())) {
-                            int startTime = Objects.requireNonNull(dataSnapshot.child("startTime").child("seconds").getValue(Integer.class));
-                            com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
-                            int endTime = Objects.requireNonNull(dataSnapshot.child("endTime").child("seconds").getValue(Integer.class));
-                            com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
-                            if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
-                                String appointmentId = Objects.requireNonNull(dataSnapshot.getKey().toString());
-                                String diseasedId = Objects.requireNonNull(dataSnapshot.child("diseaseId").getValue()).toString();
-                                String doctorId = Objects.requireNonNull(dataSnapshot.child("doctorId").getValue()).toString();
-                                String note = Objects.requireNonNull(dataSnapshot.child("note").getValue()).toString();
-                                String recordId = "0";
-                                nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId,recordId);
+                            Integer startTimeValue = dataSnapshot.child("startTime").child("seconds").getValue(Integer.class);
+                            Integer endTimeValue = dataSnapshot.child("endTime").child("seconds").getValue(Integer.class);
+                            if (startTimeValue != null && endTimeValue != null) {
+                                com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTimeValue, 0);
+                                if (startTs.getSeconds() * 1000 > now) {
+                                    com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTimeValue, 0);
+                                    if (nearestAppointment == null || nearestAppointment.getStartTime() == null || startTs.compareTo(nearestAppointment.getStartTime()) < 0) {
+                                        String appointmentId = dataSnapshot.getKey() != null ? dataSnapshot.getKey() : "";
+                                        String diseasedId = dataSnapshot.hasChild("diseaseId") && dataSnapshot.child("diseaseId").getValue() != null ? dataSnapshot.child("diseaseId").getValue().toString() : "";
+                                        String doctorId = dataSnapshot.hasChild("doctorId") && dataSnapshot.child("doctorId").getValue() != null ? dataSnapshot.child("doctorId").getValue().toString() : "";
+                                        String note = dataSnapshot.hasChild("note") && dataSnapshot.child("note").getValue() != null ? dataSnapshot.child("note").getValue().toString() : "";
+                                        String recordId = "0"; // Assuming 'recordId' is required but not present in the snapshot, using a default value
+                                        nearestAppointment = new Appointment(appointmentId, diseasedId, doctorId, endTs, note, startTs, status, userId, recordId);
+                                    }
+                                }
                             }
                         }
                     }
-
                     if (nearestAppointment != null) {
                         relativeLayout.setVisibility(View.VISIBLE);
 
@@ -134,10 +137,16 @@ public class HomeFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot doctorSnapshot) {
                                 if (doctorSnapshot.exists()) {
-                                    String doctorNameStr = Objects.requireNonNull(doctorSnapshot.child("name").getValue()).toString();
+                                    String doctorNameStr = doctorSnapshot.hasChild("name") && doctorSnapshot.child("name").getValue() != null ? doctorSnapshot.child("name").getValue().toString() : "Unknown Doctor";
                                     doctorName.setText(doctorNameStr);
-                                    String doctorImageUrl = Objects.requireNonNull(doctorSnapshot.child("imageurl").getValue().toString());
-                                    Picasso.get().load(doctorImageUrl).into(doctorImage);
+
+                                    String doctorImageUrl = doctorSnapshot.hasChild("imageurl") && doctorSnapshot.child("imageurl").getValue() != null ? doctorSnapshot.child("imageurl").getValue().toString() : "";
+                                    if (!doctorImageUrl.isEmpty()) {
+                                        Picasso.get().load(doctorImageUrl).into(doctorImage);
+                                    } else {
+                                        // Set a default image or leave it blank
+                                        doctorImage.setImageResource(R.drawable.avatar); // Assuming `default_doctor_image` is a placeholder in your drawable resources
+                                    }
                                 }
                             }
 

@@ -35,6 +35,9 @@
         <activity
             android:name=".ScheduleActivity"
             android:exported="false" />
+        <activity android:name=".AddAppointment">
+
+        </activity>
         <activity
             android:name=".MainActivity"
             android:exported="true">

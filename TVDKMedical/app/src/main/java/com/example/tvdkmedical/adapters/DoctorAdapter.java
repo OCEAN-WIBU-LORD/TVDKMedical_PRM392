@@ -18,10 +18,17 @@ import java.util.List;
 public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.VH>{
     private List<Doctor> data;
     private Context context;
+    private OnDoctorClickListener listener;
 
-    public DoctorAdapter(List<Doctor> data,Context context){
+
+    public interface OnDoctorClickListener {
+        void onDoctorClick(Doctor doctor);
+    }
+    public DoctorAdapter(List<Doctor> data,Context context, OnDoctorClickListener listener){
         this.data =data;
         this.context=context;
+        this.listener = listener;
+
     }
     @NonNull
     @Override
@@ -34,6 +41,12 @@ public class DoctorAdapter extends RecyclerView.Adapter<DoctorAdapter.VH>{
     public void onBindViewHolder(@NonNull DoctorAdapter.VH holder, int position) {
         Doctor p = data.get(position);
         holder.setData(p);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDoctorClick(p);
+            }
+        });
     }
 
     @Override
