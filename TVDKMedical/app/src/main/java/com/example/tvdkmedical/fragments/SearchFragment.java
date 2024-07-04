@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.AddAppointment;
 import com.example.tvdkmedical.LoginActivity;
 import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.adapters.DiseaseAdapter;
@@ -35,7 +37,7 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFragment extends Fragment implements DiseaseAdapter.OnDiseaseClickListener {
+public class SearchFragment extends Fragment implements DiseaseAdapter.OnDiseaseClickListener,DoctorAdapter.OnDoctorClickListener  {
     RecyclerView recyclerView;
     RecyclerView doctorRecyclerView;
     EditText searchEditText;
@@ -103,7 +105,7 @@ public class SearchFragment extends Fragment implements DiseaseAdapter.OnDisease
     private void initDoctorRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         doctorRecyclerView.setLayoutManager(layoutManager);
-        doctorAdapter = new DoctorAdapter(doctordata,getActivity());
+        doctorAdapter = new DoctorAdapter(doctordata,getActivity(), (DoctorAdapter.OnDoctorClickListener) this);
         doctorRecyclerView.setAdapter(doctorAdapter);
         loadDoctorsFromFirebase(new Callback<Doctor>() {
             @Override
@@ -167,5 +169,12 @@ public class SearchFragment extends Fragment implements DiseaseAdapter.OnDisease
                 doctorAdapter.notifyDataSetChanged();
             }
         });
+    }
+    @Override
+    public void onDoctorClick(Doctor doctor) {
+        Intent intent = new Intent(getActivity(), AddAppointment.class);
+        intent.putExtra("selectedDoctor",doctor); // Ensure Doctor class implements Serializable or Parcelable
+        Log.d("DOCTOR",doctor.getDoctorId()+doctor.getName());
+        startActivity(intent);
     }
 }

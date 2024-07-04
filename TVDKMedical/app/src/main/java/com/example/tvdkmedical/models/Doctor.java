@@ -1,8 +1,9 @@
 package com.example.tvdkmedical.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Doctor {
+public class Doctor implements Serializable {
     private String doctorId;
     private String userId;
     private String bio;
