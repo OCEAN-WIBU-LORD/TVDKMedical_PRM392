@@ -128,21 +128,22 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
         doctorResp.getDoctorByUserId(userId, new Callback<Doctor>() {
             @Override
             public void onCallback(List<Doctor> doctors) {
-                Log.d("abcdef",doctors.get(0).getDoctorId());
+                if (doctors != null && !doctors.isEmpty()) {
 
-                if (doctors != null) {
-                    long currentTimestamp = Calendar.getInstance().getTimeInMillis() / 1000;
-                    Log.d("abcdefg", String.valueOf(currentTimestamp));
+                    if (doctors != null) {
+                        long currentTimestamp = Calendar.getInstance().getTimeInMillis() / 1000;
+                        Log.d("abcdefg", String.valueOf(currentTimestamp));
 
-                    appointmentResp.getAppointmentsByDoctor(doctors.get(0).getDoctorId(), new Callback<Appointment>() {
-                        @Override
-                        public void onCallback(List<Appointment> appointments) {
-                            appointmentList.clear();
-                            appointmentList.addAll(appointments);
-                            Log.d("ab", String.valueOf(appointments.size()));
-                            appointmentAdapter.notifyDataSetChanged();
-                        }
-                    });
+                        appointmentResp.getAppointmentsByDoctor(doctors.get(0).getDoctorId(), new Callback<Appointment>() {
+                            @Override
+                            public void onCallback(List<Appointment> appointments) {
+                                appointmentList.clear();
+                                appointmentList.addAll(appointments);
+                                Log.d("ab", String.valueOf(appointments.size()));
+                                appointmentAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -243,7 +244,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
             String dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
             String shortDayOfWeek = dayOfWeek.substring(0, 2);
             dayList.add(new Day(String.valueOf(day), shortDayOfWeek));
-            calendar.add(Calendar.DAY_OF_MONTH, 1);
+git             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         if (dayAdapter != null) {

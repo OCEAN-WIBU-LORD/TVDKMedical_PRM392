@@ -63,6 +63,7 @@ public class ViewMainContent extends AppCompatActivity {
     Fragment activeFragment;
     Fragment geminiFragment;
     Fragment appointmentListDoctorFragment;
+    String fragmentType = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,20 +71,38 @@ public class ViewMainContent extends AppCompatActivity {
         setContentView(binding.getRoot());
         homeFragment = new HomeFragment();
         userProfileFragment = new FragmentUserProfile();
-        appointmentFragment = new AppointmentFragment();
         geminiFragment = new GeminiFragment();
-        searchFragment = new SearchFragment();
-        //appointmentListDoctorFragment = new AppointmentListDoctorFragment();
         activeFragment = homeFragment;
 
-        getSupportFragmentManager().beginTransaction()
-               // .add(R.id.frame_layout,appointmentListDoctorFragment,"6").hide(appointmentListDoctorFragment)
-                .add(R.id.frame_layout,searchFragment,"5").hide(searchFragment)
-                .add(R.id.frame_layout,geminiFragment,"4").hide(geminiFragment)
-                .add(R.id.frame_layout,appointmentFragment,"3").hide(appointmentFragment)
-                .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
-                .add(R.id.frame_layout, homeFragment, "1")
-                .commit();
+        isUserADoctor(isDoctor -> {
+            if (isDoctor) {
+                appointmentListDoctorFragment = new AppointmentListDoctorFragment();
+                fragmentType = "Doctor";
+
+                activeFragment = homeFragment;
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.frame_layout, appointmentListDoctorFragment, "6").hide(appointmentListDoctorFragment)
+                        .add(R.id.frame_layout, geminiFragment, "4").hide(geminiFragment)
+                        .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
+                        .add(R.id.frame_layout, homeFragment, "1")
+                        .commit();
+            } else {
+                // User-specific setup
+                appointmentFragment = new AppointmentFragment();
+                searchFragment = new SearchFragment();
+                fragmentType = "User";
+
+                activeFragment = homeFragment;
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.frame_layout, appointmentFragment, "6").hide(appointmentFragment)
+                        .add(R.id.frame_layout, searchFragment, "5").hide(searchFragment)
+                        .add(R.id.frame_layout, geminiFragment, "4").hide(geminiFragment)
+                        .add(R.id.frame_layout, userProfileFragment, "2").hide(userProfileFragment)
+                        .add(R.id.frame_layout, homeFragment, "1")
+                        .commit();
+            }
+        });
+
 
         binding.bottomnavigation.setOnItemSelectedListener(item -> {
             switch (item.getTitle().toString()) {
@@ -100,12 +119,13 @@ public class ViewMainContent extends AppCompatActivity {
                     break;
 
                 case "Appointment":
-                    showFragment(appointmentFragment);
-                    break;
-//                    showFragment(appointmentListDoctorFragment);
-//                    break;
+                    if(fragmentType.equals("Doctor")) {
+                        showFragment(appointmentListDoctorFragment);
+                    }else{
+                        showFragment(appointmentFragment);
+                    }
                 case "Search":
-                    showFragment(searchFragment);
+                   // showFragment(searchFragment);
                     break;
                 default:
                     break;
@@ -117,5 +137,32 @@ public class ViewMainContent extends AppCompatActivity {
     private void showFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().hide(activeFragment).show(fragment).commit();
         activeFragment = fragment;
+    }
+    public interface DoctorCheckCallback {
+        void onChecked(boolean isDoctor);
+    }
+    private void isUserADoctor(DoctorCheckCallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            callback.onChecked(false);
+            return;
+        }
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("users").child(user.getUid()).child("role");
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && "doctor".equals(dataSnapshot.getValue(String.class))) {
+                    callback.onChecked(true);
+                } else {
+                    callback.onChecked(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.w("isUserADoctor", "Failed to read value.", databaseError.toException());
+                callback.onChecked(false);
+            }
+        });
     }
 }
