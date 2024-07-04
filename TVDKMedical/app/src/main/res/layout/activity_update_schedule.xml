@@ -128,11 +128,11 @@
         app:layout_constraintTop_toBottomOf="@+id/textView8" />
 
     <Button
-        android:id="@+id/btnBookAppointment"
+        android:id="@+id/btnUpdateAppointment"
         android:layout_width="309dp"
         android:layout_height="57dp"
         android:layout_marginTop="16dp"
-        android:text="Book Appointment"
+        android:text="Reschedule"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtNote" />

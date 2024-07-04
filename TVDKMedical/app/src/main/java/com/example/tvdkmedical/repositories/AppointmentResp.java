@@ -1,8 +1,11 @@
 package com.example.tvdkmedical.repositories;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.example.tvdkmedical.models.Appointment;
+import com.example.tvdkmedical.models.Record;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -156,21 +159,40 @@ public class AppointmentResp {
                     appointment.setUserId(childSnapshot.child("userId").getValue(String.class));
                     appointment.setRecordId(childSnapshot.child("recordId").getValue(String.class));
 
-                    int endTime = childSnapshot.child("endTime").child("seconds").getValue(Integer.class);
-                    com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
-                    appointment.setEndTime(endTs);
+                    // Kiểm tra endTime
+                    if (childSnapshot.child("endTime").child("seconds").exists()) {
+                        Integer endTime = childSnapshot.child("endTime").child("seconds").getValue(Integer.class);
+                        if (endTime != null) {
+                            com.google.firebase.Timestamp endTs = new com.google.firebase.Timestamp(endTime, 0);
+                            appointment.setEndTime(endTs);
+                        } else {
+                            Log.e("FirebaseData", "endTime.seconds is null for appointment ID: " + appointment.getAppointmentId());
+                        }
+                    } else {
+                        Log.e("FirebaseData", "endTime.seconds does not exist for appointment ID: " + appointment.getAppointmentId());
+                    }
 
-                    int startTime = childSnapshot.child("startTime").child("seconds").getValue(Integer.class);
-                    com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
-                    appointment.setStartTime(startTs);
+                    // Kiểm tra startTime
+                    if (childSnapshot.child("startTime").child("seconds").exists()) {
+                        Integer startTime = childSnapshot.child("startTime").child("seconds").getValue(Integer.class);
+                        if (startTime != null) {
+                            com.google.firebase.Timestamp startTs = new com.google.firebase.Timestamp(startTime, 0);
+                            appointment.setStartTime(startTs);
 
-                    if (Long.parseLong(String.valueOf(startTime)) >= timestamp && Long.parseLong(String.valueOf(startTime)) <= (timestamp + 86400)) {
-                        appointments.add(appointment);
+                            if (startTime >= timestamp && startTime <= (timestamp + 86400)) {
+                                appointments.add(appointment);
+                            }
+                        } else {
+                            Log.e("FirebaseData", "startTime.seconds is null for appointment ID: " + appointment.getAppointmentId());
+                        }
+                    } else {
+                        Log.e("FirebaseData", "startTime.seconds does not exist for appointment ID: " + appointment.getAppointmentId());
                     }
                 }
 
                 callback.onCallback(appointments);
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {

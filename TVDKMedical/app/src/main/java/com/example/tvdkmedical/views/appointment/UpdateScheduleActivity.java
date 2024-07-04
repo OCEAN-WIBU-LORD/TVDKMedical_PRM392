@@ -1,10 +1,12 @@
-package com.example.tvdkmedical;
+package com.example.tvdkmedical.views.appointment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,79 +17,122 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tvdkmedical.AddAppointment;
+import com.example.tvdkmedical.R;
+import com.example.tvdkmedical.ScheduleActivity;
 import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.adapters.TimeAdapter;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Day;
 import com.example.tvdkmedical.repositories.AppointmentResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAddDayClickListener {
+public class UpdateScheduleActivity extends AppCompatActivity implements DayAdapter.OnAddDayClickListener {
 
     private Spinner spinnerMonths;
     private RecyclerView rcv;
     private RecyclerView rcvTime;
-    private ArrayList<Day> days;
-    private List<String> times;
+    private ArrayList<Day> days = new ArrayList<>();
+    private List<String> times = Arrays.asList("10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"); // Thời gian mẫu
     private ArrayList<Appointment> appointments;
     private DayAdapter adapter;
     private TimeAdapter timeAdapter;
     private int selectedMonth;
-    private Button btnBookAppointment;
+    private Button btnUpdateAppointment;
     private TextView txtNote;
+    private TextView txtDoctorName;
+    private TextView txtDoctorInfo;
+    private ImageView imageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_appointment);
+        setContentView(R.layout.activity_update_schedule);
 
+        // Khởi tạo các view
+        txtDoctorName = findViewById(R.id.doctorNameAppointment);
+        txtDoctorInfo = findViewById(R.id.doctorInforAppointment);
+        txtNote = findViewById(R.id.txtNote);
         spinnerMonths = findViewById(R.id.monthSpinner);
         rcv = findViewById(R.id.rcvDay);
         rcvTime = findViewById(R.id.rcvTime);
-        btnBookAppointment = findViewById(R.id.btnBookAppointment);
-        txtNote = findViewById(R.id.txtNote);
-        days = new ArrayList<>();
-        assignData();
-        initSpinner();
+        btnUpdateAppointment = findViewById(R.id.btnUpdateAppointment);
+        imageView = findViewById(R.id.imageView);
+
+        // Khởi tạo RecyclerView
         initRecyclerView();
         initTimeRecyclerView();
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        btnBookAppointment.setOnClickListener(new View.OnClickListener() {
-            AppointmentResp appointmentResp = new AppointmentResp();
+        // Lấy chi tiết cuộc hẹn từ Intent
+        String doctorName = getIntent().getStringExtra("name");
+        String doctorBio = getIntent().getStringExtra("bio");
+        String appointmentNote = getIntent().getStringExtra("note");
+        long startTimeMillis = getIntent().getLongExtra("startTime", 0);
+        String appointmentId = getIntent().getStringExtra("appointmentId");
+
+        // Đặt giá trị cho các view
+        txtDoctorName.setText(doctorName);
+        txtDoctorInfo.setText(doctorBio);
+        txtNote.setText(appointmentNote);
+
+        // Xử lý startTime để lấy các thành phần ngày và giờ
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(startTimeMillis);
+
+        // Đặt tháng trong spinner
+        String[] months = new DateFormatSymbols().getMonths();
+        ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
+        monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerMonths.setAdapter(monthAdapter);
+        int monthIndex = calendar.get(Calendar.MONTH);
+        spinnerMonths.setSelection(monthIndex);
+
+        // Tạo danh sách ngày của tháng và đặt adapter
+        days = generateDaysOfMonth(calendar);
+        adapter = new DayAdapter(this, days, this);
+        rcv.setAdapter(adapter);
+
+        // Thiết lập RecyclerView cho thời gian
+        timeAdapter = new TimeAdapter(this, times);
+        rcvTime.setAdapter(timeAdapter);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Lấy thông tin từ RecyclerView rcv
-                int selectedDayPosition = adapter.getSelectedDayPosition(); // Giả sử bạn có method này trong DayAdapter
+                Intent intent = new Intent(UpdateScheduleActivity.this, ScheduleActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnUpdateAppointment.setOnClickListener(new View.OnClickListener() {
+            AppointmentResp appointmentResp = new AppointmentResp();
+
+            @Override
+            public void onClick(View v) {
+                // Lấy ngày và giờ đã chọn
+                int selectedDayPosition = adapter.getSelectedDayPosition();
                 if (selectedDayPosition != RecyclerView.NO_POSITION) {
                     Day selectedDay = days.get(selectedDayPosition);
-                    String selectedDayText = selectedDay.getDay(); // Giả sử định dạng của ngày là "dd"
+                    String selectedDayText = selectedDay.getDay();
 
-                    // Lấy thông tin từ RecyclerView rcvTime
-                    int selectedTimePosition = timeAdapter.getSelectedTimePosition(); // Giả sử bạn có method này trong TimeAdapter
+                    int selectedTimePosition = timeAdapter.getSelectedTimePosition();
                     if (selectedTimePosition != RecyclerView.NO_POSITION) {
-                        String selectedTime = times.get(selectedTimePosition); // Giả sử định dạng của giờ là "HH:mm"
+                        String selectedTime = times.get(selectedTimePosition);
 
-                        // Kết hợp thông tin ngày và giờ thành một đối tượng Calendar
+                        // Kết hợp ngày và giờ thành đối tượng Calendar
                         try {
                             int year = Calendar.getInstance().get(Calendar.YEAR);
                             int month = spinnerMonths.getSelectedItemPosition();
@@ -117,7 +162,7 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                             Appointment appointment = new Appointment();
-                            //appointment.setAppointmentId("appointment_id_3");
+                            appointment.setAppointmentId(appointmentId);
                             appointment.setDiseaseId("");
                             appointment.setNote(txtNote.getText().toString());
                             appointment.setRecordId("");
@@ -125,73 +170,34 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                             appointment.setStartTime(startTime);
                             appointment.setEndTime(endTime);
                             appointment.setStatus("unconfirmed");
-                            appointment.setUserId(user.getUid().toString());
+                            appointment.setUserId(user.getUid());
 
-                            appointmentResp.createAppointment(appointment, new Callback<Appointment>() {
+                            appointmentResp.updateAppointment(appointment, new Callback<Appointment>() {
                                 @Override
                                 public void onCallback(List<Appointment> objects) {
-
+                                    // Xử lý callback nếu cần thiết
                                 }
                             });
-                            // Hiển thị thông tin trong Toast
+
+                            // Hiển thị thông báo thành công
+                            Toast.makeText(UpdateScheduleActivity.this, "Appointment updated successfully", Toast.LENGTH_SHORT).show();
+
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
-                            Toast.makeText(AddAppointment.this, "Error parsing date/time", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpdateScheduleActivity.this, "Error parsing date/time", Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(AddAppointment.this, "Please select a time", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UpdateScheduleActivity.this, "Please select a time", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(AddAppointment.this, "Please select a day", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(UpdateScheduleActivity.this, "Please select a day", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void assignData() {
-        times = new ArrayList<>(Arrays.asList("20:26", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"));
-    }
-
-    private void initSpinner() {
-        String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, months);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerMonths.setAdapter(adapter);
-        spinnerMonths.setSelection(0);
-
-        spinnerMonths.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedMonth = position;
-                updateDaysOfMonth(selectedMonth);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-    }
-
-    private void initRecyclerView() {
-        adapter = new DayAdapter(this, days, this);
-        rcv.setAdapter(adapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
-        rcv.setLayoutManager(layoutManager);
-    }
-
-    private void initTimeRecyclerView() {
-        timeAdapter = new TimeAdapter(this, times);
-        rcvTime.setAdapter(timeAdapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
-        rcvTime.setLayoutManager(layoutManager);
-    }
-
-    private void updateDaysOfMonth(int selectedMonth) {
-        days.clear();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.YEAR, Calendar.getInstance().get(Calendar.YEAR));
-        calendar.set(Calendar.MONTH, selectedMonth);
+    private ArrayList<Day> generateDaysOfMonth(Calendar calendar) {
+        ArrayList<Day> days = new ArrayList<>();
         calendar.set(Calendar.DAY_OF_MONTH, 1);
 
         int numDaysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
@@ -202,7 +208,7 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
             days.add(new Day(String.valueOf(day), shortDayOfWeek));
             calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
-        adapter.notifyDataSetChanged();
+        return days;
     }
 
     @Override
@@ -250,5 +256,19 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                 timeAdapter.setDisabledTimes(disabledTimes);
             }
         });
+    }
+
+    private void initRecyclerView() {
+        adapter = new DayAdapter(this, days, this);
+        rcv.setAdapter(adapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+        rcv.setLayoutManager(layoutManager);
+    }
+
+    private void initTimeRecyclerView() {
+        timeAdapter = new TimeAdapter(this, times);
+        rcvTime.setAdapter(timeAdapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 1, GridLayoutManager.HORIZONTAL, false);
+        rcvTime.setLayoutManager(layoutManager);
     }
 }
