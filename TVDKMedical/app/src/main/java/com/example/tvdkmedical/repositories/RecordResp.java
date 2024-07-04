@@ -23,6 +23,11 @@ public class RecordResp {
 
     // Get records by recordId
     public void getRecordById(String recordId, Callback<Record> callback) {
+        if (recordId == null || recordId.isEmpty()) {
+            callback.onCallback(new ArrayList<>());
+            return;
+        }
+
         Query query = databaseReference.child("medical_records").child(recordId);
         query.addValueEventListener(new ValueEventListener() {
             @Override

@@ -39,23 +39,23 @@ public class UserResp {
                 user.setRole(Objects.requireNonNull(snapshot.child("role").getValue()).toString());
 //                user.getDob().setTime(Objects.requireNonNull(snapshot.child("dob").getValue(Integer.class)));
 
-                String healthCard = Objects.requireNonNull(snapshot.child("healthCard").getValue()).toString();
-                if (!healthCard.equals("null")) {
-                    try {
-                        user.setHealthCard(new JSONObject(healthCard));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                String idCard = Objects.requireNonNull(snapshot.child("idCard").getValue()).toString();
-                if (!idCard.equals("null")) {
-                    try {
-                        user.setIdCard(new JSONObject(idCard));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+//                String healthCard = Objects.requireNonNull(snapshot.child("healthCard").getValue()).toString();
+//                if (!healthCard.equals("null")) {
+//                    try {
+//                        user.setHealthCard(new JSONObject(healthCard));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//
+//                String idCard = Objects.requireNonNull(snapshot.child("idCard").getValue()).toString();
+//                if (!idCard.equals("null")) {
+//                    try {
+//                        user.setIdCard(new JSONObject(idCard));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
                 List<User> users = new ArrayList<>();
                 users.add(user);
                 callback.onCallback(users);
