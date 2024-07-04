@@ -1,9 +1,11 @@
 package com.example.tvdkmedical;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +57,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
     private AllAppointmentAdapter allAppointmentAdapter;
     private TextView currentDate;
     private TextView noAppointmentsText;
+    private ImageView imgBack;
     DatabaseReference databaseReference;
 
     @Override
@@ -68,6 +71,7 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
         rcvAllAppointment = findViewById(R.id.rcvAllAppointment);
         currentDate = findViewById(R.id.currentDate);
         noAppointmentsText = findViewById(R.id.no_appointments_text);
+        imgBack = findViewById(R.id.imageView);
         days = new ArrayList<>();
         appointments = new ArrayList<>();
         setCurrentDate();
@@ -80,6 +84,14 @@ public class ScheduleActivity extends AppCompatActivity implements DayAdapter.On
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ScheduleActivity.this, ViewMainContent.class);
+                startActivity(intent);
+            }
         });
     }
 
