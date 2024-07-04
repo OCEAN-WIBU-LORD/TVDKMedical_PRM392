@@ -1,10 +1,13 @@
 package com.example.tvdkmedical;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,8 +24,12 @@ import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.adapters.TimeAdapter;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Day;
+import com.example.tvdkmedical.models.Disease;
+import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
+import com.example.tvdkmedical.repositories.DiseaseResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
+import com.example.tvdkmedical.views.appointment.UpdateScheduleActivity;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,6 +56,11 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
     private int selectedMonth;
     private Button btnBookAppointment;
     private TextView txtNote;
+    private TextView doctorNameAppointment;
+    private TextView doctorInforAppointment;
+    private TextView txtDisease;
+    private List<String> diseaseNames;
+    private ImageView imgBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +73,11 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
         rcvTime = findViewById(R.id.rcvTime);
         btnBookAppointment = findViewById(R.id.btnBookAppointment);
         txtNote = findViewById(R.id.txtNote);
+        doctorNameAppointment = findViewById(R.id.doctorNameAppointment);
+        doctorInforAppointment = findViewById(R.id.doctorInforAppointment);
+        txtDisease = findViewById(R.id.txtDisease);
+        imgBack = findViewById(R.id.imageView);
+        diseaseNames = new ArrayList<>();
         days = new ArrayList<>();
         assignData();
         initSpinner();
@@ -71,9 +88,35 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Doctor selectedDoctor = (Doctor) getIntent().getSerializableExtra("selectedDoctor");
+        if (selectedDoctor != null) {
+            doctorNameAppointment.setText(selectedDoctor.getName());
+            doctorInforAppointment.setText(selectedDoctor.getBio());
+            DiseaseResp diseaseResp = new DiseaseResp();
+            for (String diseaseId : selectedDoctor.getDiseaseIds()) {
+                diseaseResp.getDiseaseById(diseaseId, new Callback<Disease>() {
+                    @Override
+                    public void onCallback(List<Disease> diseases) {
+                        if (!diseases.isEmpty()) {
+                            diseaseNames.add(diseases.get(0).getName());
+                            updateDiseaseTextView();
+                        }
+                    }
+                });
+            }
+        }
+
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AddAppointment.this, ViewMainContent.class);
+                startActivity(intent);
+            }
+        });
 
         btnBookAppointment.setOnClickListener(new View.OnClickListener() {
             AppointmentResp appointmentResp = new AppointmentResp();
+
             @Override
             public void onClick(View v) {
                 // Lấy thông tin từ RecyclerView rcv
@@ -93,22 +136,28 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                             int month = spinnerMonths.getSelectedItemPosition();
                             int dayOfMonth = Integer.parseInt(selectedDayText);
 
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.set(Calendar.YEAR, year);
-                            calendar.set(Calendar.MONTH, month);
-                            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                            Calendar selectedCalendar = Calendar.getInstance();
+                            selectedCalendar.set(Calendar.YEAR, year);
+                            selectedCalendar.set(Calendar.MONTH, month);
+                            selectedCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
 
                             // Tách giờ và phút từ selectedTime
                             String[] timeParts = selectedTime.split(":");
                             int hour = Integer.parseInt(timeParts[0]);
                             int minute = Integer.parseInt(timeParts[1]);
 
-                            calendar.set(Calendar.HOUR_OF_DAY, hour);
-                            calendar.set(Calendar.MINUTE, minute);
-                            calendar.set(Calendar.SECOND, 0);
-                            calendar.set(Calendar.MILLISECOND, 0);
+                            selectedCalendar.set(Calendar.HOUR_OF_DAY, hour);
+                            selectedCalendar.set(Calendar.MINUTE, minute);
+                            selectedCalendar.set(Calendar.SECOND, 0);
+                            selectedCalendar.set(Calendar.MILLISECOND, 0);
 
-                            long startTimeSeconds = calendar.getTimeInMillis() / 1000;
+                            Calendar currentCalendar = Calendar.getInstance();
+                            if (selectedCalendar.before(currentCalendar)) {
+                                Toast.makeText(AddAppointment.this, "Date not available", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            long startTimeSeconds = selectedCalendar.getTimeInMillis() / 1000;
                             com.google.firebase.Timestamp startTime = new com.google.firebase.Timestamp(startTimeSeconds, 0);
 
                             long endTimeSeconds = startTime.getSeconds() + 3600;
@@ -121,19 +170,19 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                             appointment.setDiseaseId("");
                             appointment.setNote(txtNote.getText().toString());
                             appointment.setRecordId("");
-                            appointment.setDoctorId("doctor_id_1");
+                            appointment.setDoctorId(selectedDoctor.getDoctorId());
                             appointment.setStartTime(startTime);
                             appointment.setEndTime(endTime);
                             appointment.setStatus("unconfirmed");
-                            appointment.setUserId(user.getUid().toString());
+                            appointment.setUserId(user.getUid());
 
                             appointmentResp.createAppointment(appointment, new Callback<Appointment>() {
                                 @Override
                                 public void onCallback(List<Appointment> objects) {
-
+                                    // Handle the callback if needed
                                 }
                             });
-                            // Hiển thị thông tin trong Toast
+                            Toast.makeText(AddAppointment.this, "Book appointment successfully", Toast.LENGTH_SHORT).show();
                         } catch (NumberFormatException e) {
                             e.printStackTrace();
                             Toast.makeText(AddAppointment.this, "Error parsing date/time", Toast.LENGTH_SHORT).show();
@@ -146,10 +195,16 @@ public class AddAppointment extends AppCompatActivity implements DayAdapter.OnAd
                 }
             }
         });
+
     }
 
+    private void updateDiseaseTextView() {
+        // Join disease names with 5 spaces and set to TextView
+        String diseaseText = TextUtils.join("     ", diseaseNames);
+        txtDisease.setText(diseaseText);
+    }
     private void assignData() {
-        times = new ArrayList<>(Arrays.asList("20:26", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"));
+        times = new ArrayList<>(Arrays.asList("9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"));
     }
 
     private void initSpinner() {

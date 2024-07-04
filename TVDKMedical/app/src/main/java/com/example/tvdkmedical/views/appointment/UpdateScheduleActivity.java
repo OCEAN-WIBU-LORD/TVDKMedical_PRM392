@@ -2,6 +2,7 @@ package com.example.tvdkmedical.views.appointment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,7 +28,10 @@ import com.example.tvdkmedical.adapters.DayAdapter;
 import com.example.tvdkmedical.adapters.TimeAdapter;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Day;
+import com.example.tvdkmedical.models.Disease;
+import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.repositories.AppointmentResp;
+import com.example.tvdkmedical.repositories.DiseaseResp;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,6 +59,8 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
     private TextView txtDoctorName;
     private TextView txtDoctorInfo;
     private ImageView imageView;
+    private TextView txtSpec;
+    private List<String> diseaseNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +77,8 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
         rcvTime = findViewById(R.id.rcvTime);
         btnUpdateAppointment = findViewById(R.id.btnUpdateAppointment);
         imageView = findViewById(R.id.imageView);
+        txtSpec = findViewById(R.id.txtSpe);
+        diseaseNames = new ArrayList<>();
 
         // Khởi tạo RecyclerView
         initRecyclerView();
@@ -79,6 +87,7 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
         // Lấy chi tiết cuộc hẹn từ Intent
         String doctorName = getIntent().getStringExtra("name");
         String doctorBio = getIntent().getStringExtra("bio");
+        String doctorId = getIntent().getStringExtra("doctorId");
         String appointmentNote = getIntent().getStringExtra("note");
         long startTimeMillis = getIntent().getLongExtra("startTime", 0);
         String appointmentId = getIntent().getStringExtra("appointmentId");
@@ -108,6 +117,22 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
         // Thiết lập RecyclerView cho thời gian
         timeAdapter = new TimeAdapter(this, times);
         rcvTime.setAdapter(timeAdapter);
+
+        Doctor selectedDoctor = (Doctor) getIntent().getSerializableExtra("selectedDoctor");
+        if (selectedDoctor != null) {
+            DiseaseResp diseaseResp = new DiseaseResp();
+            for (String diseaseId : selectedDoctor.getDiseaseIds()) {
+                diseaseResp.getDiseaseById(diseaseId, new Callback<Disease>() {
+                    @Override
+                    public void onCallback(List<Disease> diseases) {
+                        if (!diseases.isEmpty()) {
+                            diseaseNames.add(diseases.get(0).getName());
+                            updateDiseaseTextView();
+                        }
+                    }
+                });
+            }
+        }
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,7 +191,7 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
                             appointment.setDiseaseId("");
                             appointment.setNote(txtNote.getText().toString());
                             appointment.setRecordId("");
-                            appointment.setDoctorId("doctor_id_1");
+                            appointment.setDoctorId(doctorId);
                             appointment.setStartTime(startTime);
                             appointment.setEndTime(endTime);
                             appointment.setStatus("unconfirmed");
@@ -194,6 +219,12 @@ public class UpdateScheduleActivity extends AppCompatActivity implements DayAdap
                 }
             }
         });
+    }
+
+    private void updateDiseaseTextView() {
+        // Join disease names with 5 spaces and set to TextView
+        String diseaseText = TextUtils.join("     ", diseaseNames);
+        txtSpec.setText(diseaseText);
     }
 
     private ArrayList<Day> generateDaysOfMonth(Calendar calendar) {

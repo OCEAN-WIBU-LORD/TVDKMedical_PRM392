@@ -157,6 +157,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             intent.putExtra("recordId", appointment.getRecordId());
 
             // Pass doctor details
+            intent.putExtra("selectedDoctor",doctor);
             intent.putExtra("doctorId", doctor.getDoctorId());
             intent.putExtra("userId", doctor.getUserId());
             intent.putExtra("bio", doctor.getBio());
