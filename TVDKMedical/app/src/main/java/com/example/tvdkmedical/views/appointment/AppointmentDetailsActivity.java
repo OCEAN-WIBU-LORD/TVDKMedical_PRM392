@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -63,7 +62,7 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
     ImageView imgAvatar;
     Button btnReschedule, btnCancel, btnAddRecord;
 
-    Spinner spinnerStatus;
+    Button btnStatus;
     ImageButton btnBack;
 
     FirebaseAuth mAuth;
@@ -119,25 +118,21 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
         rvRecords = findViewById(R.id.recordList);
         noRecords = findViewById(R.id.noRecords);
         btnBack = findViewById(R.id.back_button);
-
-        spinnerStatus = findViewById(R.id.btnStatus);
+        btnStatus = findViewById(R.id.btnStatus);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
-        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                this,
-                android.R.layout.simple_spinner_item,
-                new String[]{UNCONFIRMED, CONFIRMED, IN_PROGRESS, FINISHED, STATUS_CANCELLED}
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerStatus.setAdapter(adapter);
     }
 
     @SuppressLint("SetTextI18n")
     private void initViewsDoctor() {
+        btnReschedule.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+
+
         AppointmentResp appointmentResp = new AppointmentResp();
         String appointmentId = getIntent().getStringExtra("appointmentId");
         appointmentResp.getAppointmentById(appointmentId, new Callback<Appointment>() {
@@ -146,6 +141,21 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                 // Get appointment data
                 List<Appointment> appointments = new ArrayList<>(appointmentList);
                 Appointment appointment = appointments.get(0);
+
+                if (appointment.getStatus().equals(IN_PROGRESS)) {
+                    btnReschedule.setVisibility(View.VISIBLE);
+                    btnReschedule.setText("Finish Appointment");
+                    btnReschedule.setOnClickListener(v -> {
+                        appointment.setStatus(FINISHED);
+                        appointmentResp.updateAppointment(appointment, new Callback<Appointment>() {
+                            @Override
+                            public void onCallback(List<Appointment> appointmentList) {
+                                // Update the appointment list
+                                initViewsDoctor();
+                            }
+                        });
+                    });
+                }
 
                 // Get patient data
                 String patientId = appointment.getUserId();
@@ -171,44 +181,14 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
     }
 
     private void setSpinnerStatus(Appointment appointment, String role) {
-        // Set status & disable the button for user
-        String status = appointment.getStatus().toUpperCase();
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerStatus.getAdapter();
-        int position = adapter.getPosition(status);
-        spinnerStatus.setSelection(position);
-
-        if (!status.equals(UNCONFIRMED) && !status.equals(CONFIRMED)) {
-            btnCancel.setEnabled(false);
-            btnReschedule.setEnabled(false);
-        }
-
-        if (role.equals("doctor")) {
-            spinnerStatus.setEnabled(true);
-            // Handle save status appointment when change status
-            spinnerStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    appointment.setStatus(spinnerStatus.getSelectedItem().toString());
-                    new AppointmentResp().updateAppointment(appointment, new Callback<Appointment>() {
-                        @Override
-                        public void onCallback(List<Appointment> appointmentList) {
-                            // Reload the activity
-                            initViewsDoctor();
-                        }
-                    });
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
-                    // Do nothing
-                }
-            });
-        } else {
-            spinnerStatus.setEnabled(false);
-        }
+        btnStatus.setText(appointment.getStatus().toUpperCase());
+        btnStatus.setEnabled(false);
     }
 
     private void initViewsUser() {
+        btnReschedule.setVisibility(View.GONE);
+        btnCancel.setVisibility(View.GONE);
+
         AppointmentResp appointmentResp = new AppointmentResp();
         DiseaseResp diseaseResp = new DiseaseResp();
 

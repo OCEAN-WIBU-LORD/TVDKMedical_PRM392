@@ -67,6 +67,14 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
     FirebaseAuth mAuth;
     FirebaseUser userDetails;
 
+    // refresh the list of appointments when finish from sub activity
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (doctorAppointmentAdapter != null) {
+            loadAppointmentsForDoctor(userDetails.getUid(),doctorAppointmentAdapter);
+        }
+    }
 
     @Nullable
     @Override

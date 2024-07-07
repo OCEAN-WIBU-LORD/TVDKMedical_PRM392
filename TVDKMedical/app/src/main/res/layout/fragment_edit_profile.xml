@@ -158,14 +158,11 @@
 
 
                             <EditText
-                                android:id="@+id/genderText"
+                                android:id="@+id/addressText"
                                 android:layout_width="119dp"
                                 android:layout_height="wrap_content"
                                 android:background="@android:color/transparent"
-                                android:clickable="true"
-                                android:focusable="false"
-                                android:hint="Gender"
-                                android:onClick="showGenderPicker"
+                                android:hint="@string/address"
                                 android:padding="15sp"
                                 android:textSize="18sp"
                                 app:layout_constraintEnd_toEndOf="parent"

@@ -82,6 +82,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         private Button btnCancel; // Add a reference to the Cancel button
         private Button btnReschedule; // Add a reference to the Reschedule button
         private TextView completedText;
+        private Button btnStatus;
 
         private void bindingView() {
             txtStartTime = itemView.findViewById(R.id.appointmentStartTime);
@@ -92,6 +93,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             btnCancel = itemView.findViewById(R.id.btnCancel); // Bind the Cancel button
             btnReschedule = itemView.findViewById(R.id.btnReschedule); // Bind the Reschedule button
             completedText = itemView.findViewById(R.id.completedText);
+            btnStatus = itemView.findViewById(R.id.btnStatus);
         }
 
         private void bindingAction() {
@@ -136,6 +138,11 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
                     })
                     .setNegativeButton("No", null)
                     .show();
+        }
+
+        private void setStatus(Appointment appointment) {
+            btnStatus.setText(appointment.getStatus().toUpperCase());
+            btnStatus.setEnabled(false);
         }
 
         // Handle Reschedule button click
@@ -211,6 +218,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
                 txtDoctorName.setText("Unknown Doctor");
                 txtDoctorInfo.setText("");
             }
+            setStatus(appointment);
         }
 
         private String formatTimestampToTime(Timestamp timestamp) {

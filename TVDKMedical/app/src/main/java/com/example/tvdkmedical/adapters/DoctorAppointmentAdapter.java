@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppointmentAdapter.ViewHolder>{
+public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppointmentAdapter.ViewHolder> {
     private Context context;
     private List<Appointment> appointments;
     private List<User> users;
@@ -35,6 +35,7 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         this.appointments = appointments;
         this.users = users;
     }
+
     @NonNull
     @Override
     public DoctorAppointmentAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -47,7 +48,7 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
     public void onBindViewHolder(@NonNull DoctorAppointmentAdapter.ViewHolder holder, int position) {
         Appointment p = appointments.get(position);
         User d = findUserById(p.getUserId());
-        holder.setData(p,d);
+        holder.setData(p, d);
     }
 
     private User findUserById(String userId) {
@@ -63,6 +64,7 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
     public int getItemCount() {
         return appointments.size();
     }
+
     public void updateData(List<Appointment> newAppointments) {
         this.appointments = newAppointments;
         notifyDataSetChanged();
@@ -76,7 +78,7 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         private TextView txtDoctorInfo;
         private TextView txtDateBooking;
         private Button btnReschedule;
-        private Button btnCancel;
+        private Button btnCancel, btnStatus;
 
         private void bindingView() {
             txtStartTime = itemView.findViewById(R.id.appointmentStartTime);
@@ -86,7 +88,9 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
             txtDateBooking = itemView.findViewById(R.id.dateBooking);
             btnReschedule = itemView.findViewById(R.id.btnReschedule);
             btnCancel = itemView.findViewById(R.id.btnCancel);
+            btnStatus = itemView.findViewById(R.id.btnStatus);
         }
+
         private void bindingAction() {
             btnReschedule.setOnClickListener(this::onbtnRescheduleClick);
             btnCancel.setOnClickListener(this::onbtnCancelClick);
@@ -103,20 +107,19 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         }
 
         private void onbtnRescheduleClick(View view) {
-            int position =getAdapterPosition();
+            int position = getAdapterPosition();
             Appointment appointment = appointments.get(position);
-            if(appointment.getStatus().equals("unconfirmed")) {
+            if (appointment.getStatus().equals("unconfirmed")) {
                 appointment.setStatus("confirmed");
                 updateAppointment(appointment);
 
-            }else if(appointment.getStatus().equals("confirmed")) {
+            } else if (appointment.getStatus().equals("confirmed")) {
                 appointment.setStatus("in progress");
                 updateAppointment(appointment);
                 Intent intent = new Intent(context, AppointmentDetailsActivity.class);
                 intent.putExtra("appointmentId", appointment.getAppointmentId());
                 context.startActivity(intent);
-            }
-            else if(appointment.getStatus().equals("in progress")) {
+            } else if (appointment.getStatus().equals("in progress")) {
                 appointment.setStatus("in progress");
                 updateAppointment(appointment);
                 Intent intent = new Intent(context, AppointmentDetailsActivity.class);
@@ -134,29 +137,34 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
 
         }
 
+        private void setStatus(Appointment appointment) {
+            btnStatus.setText(appointment.getStatus().toUpperCase());
+            btnStatus.setEnabled(false);
+        }
+
         public void setData(Appointment p) {
         }
+
         public void setData(Appointment appointment, User user) {
             txtStartTime.setText(formatTimestampToTime(appointment.getStartTime()));
             txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
             txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
 
-            if(appointment.getStatus().equals("unconfirmed")) {
+            if (appointment.getStatus().equals("unconfirmed")) {
                 btnReschedule.setText("Accept");
                 btnCancel.setText("Decline");
-            }else if(appointment.getStatus().equals("canceled")) {
+            } else if (appointment.getStatus().equals("canceled")) {
                 btnReschedule.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
-            }else if(appointment.getStatus().equals("confirmed")) {
+            } else if (appointment.getStatus().equals("confirmed")) {
                 btnReschedule.setText("Start appointment");
                 btnReschedule.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.GONE);
-            }
-            else if(appointment.getStatus().equals("in progress")) {
+            } else if (appointment.getStatus().equals("in progress")) {
                 btnReschedule.setText("Continue appointment");
                 btnReschedule.setVisibility(View.VISIBLE);
                 btnCancel.setVisibility(View.GONE);
-            }else if(appointment.getStatus().equals("finished")) {
+            } else if (appointment.getStatus().equals("finished")) {
                 btnReschedule.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
                 txtDoctorInfo.setText("COMPLETED");
@@ -168,6 +176,7 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
                 txtDoctorName.setText("Unknown Doctor");
                 txtDoctorInfo.setText("");
             }
+            setStatus(appointment);
         }
 
         private String formatTimestampToTime(Timestamp timestamp) {

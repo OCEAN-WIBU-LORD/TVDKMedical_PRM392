@@ -20,6 +20,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
+
+import com.example.tvdkmedical.models.User;
+import com.example.tvdkmedical.repositories.UserResp;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,6 +43,8 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Firebase;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -181,16 +187,33 @@ public class RegisterActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
-                                    mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    FirebaseUser user = mAuth.getCurrentUser();
+
+                                    if (user == null) {
+                                        Toast.makeText(RegisterActivity.this, "Register account failed. Please try again.",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.e(TAG, "User is null");
+                                        return;
+                                    }
+
+                                    // Create user
+                                    User newUser = new User(user.getUid(), name, email, null, null, null, null, null, "user");
+                                    // Save user to database
+                                    new UserResp().createUser(newUser, new Callback<User>() {
                                         @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Toast.makeText(RegisterActivity.this, "Account Created. Please verify your email.",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                                                startActivity(intent);
-                                                finish();
-                                            }
+                                        public void onCallback(List<User> objects) {
+                                            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+                                                        Toast.makeText(RegisterActivity.this, "Account Created. Please verify your email.",
+                                                                Toast.LENGTH_SHORT).show();
+                                                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                                        startActivity(intent);
+                                                        finish();
+                                                    }
+                                                }
+                                            });
                                         }
                                     });
                                 } else {

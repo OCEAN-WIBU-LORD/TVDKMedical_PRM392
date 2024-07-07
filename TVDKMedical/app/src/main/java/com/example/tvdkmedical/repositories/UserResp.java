@@ -2,6 +2,7 @@ package com.example.tvdkmedical.repositories;
 
 import androidx.annotation.NonNull;
 
+import com.example.tvdkmedical.models.UpdatedUser;
 import com.example.tvdkmedical.models.User;
 import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,9 +17,12 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class UserResp {
@@ -60,7 +64,12 @@ public class UserResp {
                     user.setIdCard(new JSONObject());
                 }
 
-//                user.getDob().setTime(Objects.requireNonNull(snapshot.child("dob").getValue(Integer.class)));
+                // set dob as timestamp from snapshot.child("dob").child("time")
+                if (snapshot.hasChild("dob")) {
+                    Long timestamp = Objects.requireNonNull(snapshot.child("dob").child("time").getValue(Long.class));
+                    // convert to timestamp
+                    user.setDob(new java.sql.Timestamp(timestamp));
+                }
 
 //                String healthCard = Objects.requireNonNull(snapshot.child("healthCard").getValue()).toString();
 //                if (!healthCard.equals("null")) {
@@ -136,6 +145,51 @@ public class UserResp {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 System.out.println("Error: " + error.getMessage());
+            }
+        });
+    }
+
+    public void createUser(User user, Callback<User> callback) {
+        databaseReference.child("users").child(user.getUserId()).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    List<User> users = new ArrayList<>();
+                    users.add(user);
+                    callback.onCallback(users);
+                } else {
+                    System.out.println("Error: " + task.getException());
+                }
+            }
+        });
+    }
+
+    public void updateUser(User user, Callback<User> callback) {
+        // convert user to the same user with no JSONObjects
+        Map<String, Object> map = new HashMap<>(); // empty map
+        Map<String, Object> idCard = new HashMap<>();
+        // store user.getIdCard().optString("id") in idCard with key id
+        idCard.put("id", user.getIdCard().optString("id"));
+        UpdatedUser updatedUser = new UpdatedUser(
+                user.getUserId(),
+                user.getName(),
+                user.getEmail(),
+                user.getDob(),
+                user.getAddress(),
+                user.getPhone(),
+                idCard,
+                map,
+                user.getRole());
+        databaseReference.child("users").child(user.getUserId()).setValue(updatedUser).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    List<User> users = new ArrayList<>();
+                    users.add(user);
+                    callback.onCallback(users);
+                } else {
+                    System.out.println("Error: " + task.getException());
+                }
             }
         });
     }

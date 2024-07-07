@@ -9,11 +9,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -21,6 +23,15 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.tvdkmedical.fragments.HomeFragment;
+import com.example.tvdkmedical.models.User;
+import com.example.tvdkmedical.repositories.UserResp;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 public class FragmentUserProfile extends Fragment {
 
@@ -29,6 +40,9 @@ public class FragmentUserProfile extends Fragment {
     private Boolean isAuthenticated = false;
     private Button takePermission, cardViewer;
     private CardView returnBtn, editProfile;
+    private FirebaseAuth mAuth;
+    private TextView tvName, tvPhone;
+    private ConstraintLayout logOutBtn;
 
     public FragmentUserProfile() {
         // Required empty public constructor
@@ -57,11 +71,45 @@ public class FragmentUserProfile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        tvName = view.findViewById(R.id.tvName);
+        tvPhone = view.findViewById(R.id.tvPhone);
+//        tvDob = view.findViewById(R.id.tvDob);
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        new UserResp().getUser(currentUser.getUid(), new Callback<User>() {
+            @Override
+            public void onCallback(List<User> objects) {
+                // Set user data to the views
+                User user = objects.get(0);
+                tvName.setText(user.getName());
+                tvPhone.setText(user.getPhone());
+
+                String dob = "";
+                if (user.getDob() != null) {
+                    dob = new SimpleDateFormat("dd/MM/yyyy").format(user.getDob());
+                }
+//                tvDob.setText(dob);
+            }
+        });
         returnBtn  = view.findViewById(R.id.returnBtn);
         editProfile = view.findViewById(R.id.editCardView);
   //      cardViewer.setOnClickListener(v -> replaceFragment(new LibraryFragment()));
         editProfile.setOnClickListener(v->replaceFragment(new FragmentEditProfile()));
-       returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
+        returnBtn.setOnClickListener(v -> replaceFragment(new HomeFragment()));
+
+        logOutBtn = view.findViewById(R.id.logOutBtn);
+        logOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                startActivity(intent);
+                Toast.makeText(getActivity(), "Log Out successfully", Toast.LENGTH_SHORT).show();
+                getActivity().finish();
+            }
+        });
         return view;
     }
 
