@@ -104,4 +104,6 @@
     <string name="treatment">Treatment</string>
     <string name="diagnosis">Diagnosis</string>
     <string name="medical_record">Medical Record</string>
+    <string name="back_button_description">Go back</string>
+
 </resources>

@@ -315,7 +315,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
 
         Bitmap bitmap = ((BitmapDrawable) userAvatarImg.getDrawable()).getBitmap();
         String avatarBase64 = bitmapToBase64(bitmap);
-        userData.put("avatarConverted", avatarBase64);
+       userData.put("avatarConverted", avatarBase64);
 
         databaseReference.setValue(userData).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {

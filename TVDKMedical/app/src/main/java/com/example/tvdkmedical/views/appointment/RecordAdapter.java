@@ -29,6 +29,10 @@ public class RecordAdapter extends RecyclerView.Adapter<RecordAdapter.RecordView
         this.recordList = recordList;
     }
 
+    public void setRecords(List<Record> recordList) {
+        this.recordList = recordList;
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public RecordAdapter.RecordViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

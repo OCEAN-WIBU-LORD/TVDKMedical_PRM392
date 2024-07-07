@@ -14,6 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -54,13 +55,14 @@ public class RecordResp {
     }
 
     // Create an record
-    public void createRecord(Record record, Callback<Record> callback) {
+    public void createRecord(Record record, Callback<String> callback) {
         DatabaseReference ref = databaseReference.child("medical_records").push();
+        String recordId = ref.getKey();
+        List<String> recordIds = new ArrayList<>();
+        recordIds.add(recordId);
         ref.setValue(record).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                List<Record> records = new ArrayList<>();
-                records.add(record);
-                callback.onCallback(records);
+                callback.onCallback(recordIds);
             } else {
                 System.out.println("Error: " + task.getException());
             }

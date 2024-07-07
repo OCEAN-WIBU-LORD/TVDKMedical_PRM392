@@ -81,6 +81,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
         private TextView txtDateBooking;
         private Button btnCancel; // Add a reference to the Cancel button
         private Button btnReschedule; // Add a reference to the Reschedule button
+        private TextView completedText;
 
         private void bindingView() {
             txtStartTime = itemView.findViewById(R.id.appointmentStartTime);
@@ -90,6 +91,7 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             txtDateBooking = itemView.findViewById(R.id.dateBooking);
             btnCancel = itemView.findViewById(R.id.btnCancel); // Bind the Cancel button
             btnReschedule = itemView.findViewById(R.id.btnReschedule); // Bind the Reschedule button
+            completedText = itemView.findViewById(R.id.completedText);
         }
 
         private void bindingAction() {
@@ -177,6 +179,31 @@ public class AllAppointmentAdapter extends RecyclerView.Adapter<AllAppointmentAd
             txtStartTime.setText(formatTimestampToTime(appointment.getStartTime()));
             txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
             txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
+            if(appointment.getStatus().equals("unconfirmed")) {
+                btnCancel.setVisibility(View.VISIBLE);
+                btnReschedule.setVisibility(View.VISIBLE);
+            }else if(appointment.getStatus().equals("canceled")) {
+                btnCancel.setVisibility(View.GONE);
+                btnReschedule.setVisibility(View.GONE);
+                completedText.setText("HAS BEEN CANCLED BY DOCTOR");
+                completedText.setVisibility(View.VISIBLE);
+            }else if(appointment.getStatus().equals("confirmed")) {
+                btnReschedule.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                completedText.setText("CONFIRMED BY DOCTOR");
+                completedText.setVisibility(View.VISIBLE);
+
+            }else if(appointment.getStatus().equals("in progress")) {
+                btnReschedule.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                completedText.setText("IN PROGRESS");
+                completedText.setVisibility(View.VISIBLE);
+            }else if(appointment.getStatus().equals("finished")) {
+                btnReschedule.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                completedText.setText("COMPLETED");
+                completedText.setVisibility(View.VISIBLE);
+            }
             if (doctor != null) {
                 txtDoctorName.setText(doctor.getName());
                 txtDoctorInfo.setText(doctor.getBio());
