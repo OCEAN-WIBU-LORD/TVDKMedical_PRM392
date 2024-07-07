@@ -1,9 +1,11 @@
 package com.example.tvdkmedical.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,9 @@ import com.example.tvdkmedical.R;
 import com.example.tvdkmedical.models.Appointment;
 import com.example.tvdkmedical.models.Doctor;
 import com.example.tvdkmedical.models.User;
+import com.example.tvdkmedical.repositories.AppointmentResp;
+import com.example.tvdkmedical.repositories.callbacks.Callback;
+import com.example.tvdkmedical.views.appointment.AppointmentDetailsActivity;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -70,6 +75,8 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         private TextView txtDoctorName;
         private TextView txtDoctorInfo;
         private TextView txtDateBooking;
+        private Button btnReschedule;
+        private Button btnCancel;
 
         private void bindingView() {
             txtStartTime = itemView.findViewById(R.id.appointmentStartTime);
@@ -77,10 +84,53 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
             txtDoctorName = itemView.findViewById(R.id.doctorNameAppointment);
             txtDoctorInfo = itemView.findViewById(R.id.doctorInforAppointment);
             txtDateBooking = itemView.findViewById(R.id.dateBooking);
+            btnReschedule = itemView.findViewById(R.id.btnReschedule);
+            btnCancel = itemView.findViewById(R.id.btnCancel);
         }
+        private void bindingAction() {
+            btnReschedule.setOnClickListener(this::onbtnRescheduleClick);
+            btnCancel.setOnClickListener(this::onbtnCancelClick);
+        }
+
+        private void onbtnCancelClick(View view) {
+            int position = getAdapterPosition();
+            Appointment appointment = appointments.get(position);
+            if (appointment.getStatus().equals("unconfirmed")) {
+                appointment.setStatus("canceled");
+            }
+            updateAppointment(appointment);
+
+        }
+
+        private void onbtnRescheduleClick(View view) {
+            int position =getAdapterPosition();
+            Appointment appointment = appointments.get(position);
+            if(appointment.getStatus().equals("unconfirmed")) {
+                appointment.setStatus("confirmed");
+                updateAppointment(appointment);
+
+            }else if(appointment.getStatus().equals("confirmed")) {
+                appointment.setStatus("in progress");
+                updateAppointment(appointment);
+                Intent intent = new Intent(context, AppointmentDetailsActivity.class);
+                intent.putExtra("appointmentId", appointment.getAppointmentId());
+                context.startActivity(intent);
+            }
+            else if(appointment.getStatus().equals("in progress")) {
+                appointment.setStatus("in progress");
+                updateAppointment(appointment);
+                Intent intent = new Intent(context, AppointmentDetailsActivity.class);
+                intent.putExtra("appointmentId", appointment.getAppointmentId());
+                context.startActivity(intent);
+            }
+
+
+        }
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             bindingView();
+            bindingAction();
 
         }
 
@@ -91,6 +141,26 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
             txtEndTime.setText(formatTimestampToTime(appointment.getEndTime()));
             txtDateBooking.setText(formatTimestampToDate(appointment.getStartTime()));
 
+            if(appointment.getStatus().equals("unconfirmed")) {
+                btnReschedule.setText("Accept");
+                btnCancel.setText("Decline");
+            }else if(appointment.getStatus().equals("canceled")) {
+                btnReschedule.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+            }else if(appointment.getStatus().equals("confirmed")) {
+                btnReschedule.setText("Start appointment");
+                btnReschedule.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.GONE);
+            }
+            else if(appointment.getStatus().equals("in progress")) {
+                btnReschedule.setText("Continue appointment");
+                btnReschedule.setVisibility(View.VISIBLE);
+                btnCancel.setVisibility(View.GONE);
+            }else if(appointment.getStatus().equals("finished")) {
+                btnReschedule.setVisibility(View.GONE);
+                btnCancel.setVisibility(View.GONE);
+                txtDoctorInfo.setText("COMPLETED");
+            }
             if (user != null) {
                 txtDoctorName.setText(user.getName());
                 txtDoctorInfo.setText(user.getPhone());
@@ -114,4 +184,25 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         }
 
     }
+
+    private void updateAppointment(Appointment appointment) {
+        AppointmentResp appointmentResp = new AppointmentResp();
+        appointmentResp.updateAppointment(appointment, new Callback<Appointment>() {
+            @Override
+            public void onCallback(List<Appointment> objects) {
+                if (!objects.isEmpty()) {
+                    Appointment updated = objects.get(0);
+                    for (int i = 0; i < appointments.size(); i++) {
+                        if (appointments.get(i).getAppointmentId().equals(updated.getAppointmentId())) {
+                            appointments.set(i, updated);
+                            notifyItemChanged(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
 }

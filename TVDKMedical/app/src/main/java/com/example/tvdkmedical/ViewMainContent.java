@@ -124,8 +124,9 @@ public class ViewMainContent extends AppCompatActivity {
                     }else{
                         showFragment(appointmentFragment);
                     }
+                    break;
                 case "Search":
-                   // showFragment(searchFragment);
+                   showFragment(searchFragment);
                     break;
                 default:
                     break;
@@ -135,8 +136,16 @@ public class ViewMainContent extends AppCompatActivity {
 
     }
     private void showFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().hide(activeFragment).show(fragment).commit();
-        activeFragment = fragment;
+        if (fragment != null && fragment.isAdded()) {
+            getSupportFragmentManager().beginTransaction()
+                    .hide(activeFragment)
+                    .show(fragment)
+                    .commitAllowingStateLoss(); // Use commit() if you want to handle state loss manually.
+            activeFragment = fragment;
+        } else {
+            // Handle the case where fragment is null or not added.
+            Log.e("FragmentTransaction", "Fragment is null or not added.");
+        }
     }
     public interface DoctorCheckCallback {
         void onChecked(boolean isDoctor);

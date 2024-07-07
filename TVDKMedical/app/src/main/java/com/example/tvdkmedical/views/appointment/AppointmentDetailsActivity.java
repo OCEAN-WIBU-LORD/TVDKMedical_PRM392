@@ -3,6 +3,7 @@ package com.example.tvdkmedical.views.appointment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
@@ -40,6 +42,8 @@ import com.example.tvdkmedical.utils.Utils;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 
@@ -53,21 +57,23 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
     private RecyclerView rvRecords;
     private RecordAdapter recordAdapter;
 
+
     // Appointment all layout
     TextView dateBooking, appointmentStartTime, appointmentEndTime, doctorNameAppointment, doctorInforAppointment, noRecords;
     ImageView imgAvatar;
     Button btnReschedule, btnCancel, btnAddRecord;
 
     Spinner spinnerStatus;
+    ImageButton btnBack;
 
     FirebaseAuth mAuth;
 
     // Constants for status
-    public static final String UNCONFIRMED = "UNCONFIRMED";
-    public static final String CONFIRMED = "CONFIRMED";
-    public static final String IN_PROGRESS = "IN PROGRESS";
-    public static final String FINISHED = "FINISHED";
-    public static final String STATUS_CANCELLED = "CANCELLED";
+    public static final String UNCONFIRMED = "unconfirmed";
+    public static final String CONFIRMED = "confirmed";
+    public static final String IN_PROGRESS = "in progress";
+    public static final String FINISHED = "finished";
+    public static final String STATUS_CANCELLED = "canceled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +118,15 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
         rvDiseases = findViewById(R.id.diseaseList);
         rvRecords = findViewById(R.id.recordList);
         noRecords = findViewById(R.id.noRecords);
+        btnBack = findViewById(R.id.back_button);
 
         spinnerStatus = findViewById(R.id.btnStatus);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
                 this,
                 android.R.layout.simple_spinner_item,
@@ -237,6 +250,7 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
     private void getDiseaseData(@NonNull Appointment appointment) {
         // Get disease data
         String diseaseId = appointment.getDiseaseId();
+
         new DiseaseResp().getDiseaseById(diseaseId, new Callback<Disease>() {
             @Override
             public void onCallback(List<Disease> diseaseList) {
@@ -268,6 +282,8 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                         throw new RuntimeException(e);
                     }
                     rvRecords.setAdapter(recordAdapter);
+                    rvRecords.setVisibility(View.VISIBLE);
+
                     rvRecords.setLayoutManager(new LinearLayoutManager(AppointmentDetailsActivity.this));
 
                     // Handle the click event of the Add Record button
@@ -313,21 +329,23 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                             record,
                             etDiagnosis,
                             etTreatment,
-                            popupWindow
+                            popupWindow,
+                            appointment
                     );
                 });
             }
         });
     }
 
-    private void handleBtnPublishRecord(@NonNull Button btnPublishRecord, Record record, EditText etDiagnosis, EditText etTreatment, PopupWindow popupWindow) {
+    private void handleBtnPublishRecord(@NonNull Button btnPublishRecord, Record record, EditText etDiagnosis, EditText etTreatment, PopupWindow popupWindow,Appointment appointment) {
         btnPublishRecord.setOnClickListener(v1 -> {
             record.setDiagnosis(etDiagnosis.getText().toString());
             record.setTreatment(etTreatment.getText().toString());
             record.setDate(new Timestamp(Timestamp.now().getSeconds(), 0));
+            Log.d("Record", record.getRecordId() == null?"nothing": record.getRecordId().toString());
 
             // TODO: Add if new else update
-            if (!Objects.equals(record.getRecordId(), "")) {
+            if (record.getRecordId() != null && !record.getRecordId().isEmpty()) {
                 // Update
                 new RecordResp().updateRecord(record, new Callback<Record>() {
                     @Override
@@ -337,10 +355,12 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                 });
             } else {
                 // Create
-                new RecordResp().createRecord(record, new Callback<Record>() {
-                    @Override
-                    public void onCallback(List<Record> recordList) {
-                        // Update the record list
+                new RecordResp().createRecord(record, newRecordIdList -> {
+                    if (newRecordIdList != null && !newRecordIdList.isEmpty()) {
+                        // Extract the first (and expectedly only) record ID from the list
+                        String newRecordId = newRecordIdList.get(0);
+                        // Here, update the Appointment with the new record ID
+                        updateAppointmentWithRecordId(appointment.getAppointmentId(), newRecordId);
                     }
                 });
             }
@@ -348,6 +368,17 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
             // Reload the activity
             initViewsDoctor();
             popupWindow.dismiss();
+        });
+    }
+
+    private void updateAppointmentWithRecordId(String appointmentId, String recordId) {
+        DatabaseReference appointmentRef = FirebaseDatabase.getInstance().getReference("appointments").child(appointmentId);
+        appointmentRef.child("recordId").setValue(recordId).addOnSuccessListener(aVoid -> {
+            // Handle success, maybe log something or refresh UI
+            Log.d("AppointmentUpdate", "Appointment recordId updated successfully.");
+        }).addOnFailureListener(e -> {
+            // Handle failure, maybe log the error
+            Log.e("AppointmentUpdate", "Failed to update Appointment recordId.", e);
         });
     }
 }

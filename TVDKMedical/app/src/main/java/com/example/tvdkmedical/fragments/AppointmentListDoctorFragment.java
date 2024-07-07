@@ -244,7 +244,7 @@ public class AppointmentListDoctorFragment extends Fragment implements StatusAda
             String dayOfWeek = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
             String shortDayOfWeek = dayOfWeek.substring(0, 2);
             dayList.add(new Day(String.valueOf(day), shortDayOfWeek));
-git             calendar.add(Calendar.DAY_OF_MONTH, 1);
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
         }
 
         if (dayAdapter != null) {

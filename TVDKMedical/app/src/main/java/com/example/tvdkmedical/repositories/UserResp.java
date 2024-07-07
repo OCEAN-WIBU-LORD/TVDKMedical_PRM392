@@ -32,11 +32,34 @@ public class UserResp {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = new User();
                 user.setUserId(userId);
-                user.setName(Objects.requireNonNull(snapshot.child("name").getValue()).toString());
-                user.setEmail(Objects.requireNonNull(snapshot.child("email").getValue()).toString());
-                user.setPhone(Objects.requireNonNull(snapshot.child("phone").getValue()).toString());
-                user.setAddress(Objects.requireNonNull(snapshot.child("address").getValue()).toString());
-                user.setRole(Objects.requireNonNull(snapshot.child("role").getValue()).toString());
+                user.setName(snapshot.hasChild("name") ? snapshot.child("name").getValue().toString() : "");
+                user.setEmail(snapshot.hasChild("email") ? snapshot.child("email").getValue().toString() : "");
+                user.setPhone(snapshot.hasChild("phone") ? snapshot.child("phone").getValue().toString() : "");
+                user.setAddress(snapshot.hasChild("address") ? snapshot.child("address").getValue().toString() : "");
+                user.setRole(snapshot.hasChild("role") ? snapshot.child("role").getValue().toString() : "");
+
+                String healthCard = snapshot.hasChild("healthCard") && snapshot.child("healthCard").getValue() != null ? snapshot.child("healthCard").getValue().toString() : "null";
+                if (!"null".equals(healthCard)) {
+                    try {
+                        user.setHealthCard(new JSONObject(healthCard));
+                    } catch (JSONException e) {
+                        user.setHealthCard(new JSONObject()); // Set to empty JSON object if parsing fails
+                    }
+                } else {
+                    user.setHealthCard(new JSONObject());
+                }
+
+                String idCard = snapshot.hasChild("idCard") && snapshot.child("idCard").getValue() != null ? snapshot.child("idCard").getValue().toString() : "null";
+                if (!"null".equals(idCard)) {
+                    try {
+                        user.setIdCard(new JSONObject(idCard));
+                    } catch (JSONException e) {
+                        user.setIdCard(new JSONObject()); // Set to empty JSON object if parsing fails
+                    }
+                } else {
+                    user.setIdCard(new JSONObject());
+                }
+
 //                user.getDob().setTime(Objects.requireNonNull(snapshot.child("dob").getValue(Integer.class)));
 
 //                String healthCard = Objects.requireNonNull(snapshot.child("healthCard").getValue()).toString();
