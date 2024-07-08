@@ -3,12 +3,16 @@ package com.example.tvdkmedical;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,9 +33,16 @@ import com.example.tvdkmedical.repositories.callbacks.Callback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 public class FragmentUserProfile extends Fragment {
 
@@ -41,7 +52,8 @@ public class FragmentUserProfile extends Fragment {
     private Button takePermission, cardViewer;
     private CardView returnBtn, editProfile;
     private FirebaseAuth mAuth;
-    private TextView tvName, tvPhone;
+    private ImageView userAvatarImg ;
+    private TextView tvName, tvPhone, tvDob;
     private ConstraintLayout logOutBtn;
 
     public FragmentUserProfile() {
@@ -60,6 +72,7 @@ public class FragmentUserProfile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadUserAvatar();
         if (getArguments() != null) {
             String mParam1 = getArguments().getString("param1");
             String mParam2 = getArguments().getString("param2");
@@ -73,7 +86,8 @@ public class FragmentUserProfile extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         tvName = view.findViewById(R.id.tvName);
         tvPhone = view.findViewById(R.id.tvPhone);
-//        tvDob = view.findViewById(R.id.tvDob);
+          tvDob = view.findViewById(R.id.tvDob);
+        userAvatarImg = view.findViewById(R.id.userAvatarImg);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -85,12 +99,11 @@ public class FragmentUserProfile extends Fragment {
                 User user = objects.get(0);
                 tvName.setText(user.getName());
                 tvPhone.setText(user.getPhone());
-
                 String dob = "";
                 if (user.getDob() != null) {
                     dob = new SimpleDateFormat("dd/MM/yyyy").format(user.getDob());
                 }
-//                tvDob.setText(dob);
+               tvDob.setText(dob);
             }
         });
         returnBtn  = view.findViewById(R.id.returnBtn);
@@ -112,8 +125,53 @@ public class FragmentUserProfile extends Fragment {
         });
         return view;
     }
+    private void loadUserAvatar() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
+            databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        String avatarBase64 = dataSnapshot.child("userAvatar").getValue(String.class);
+                        if (avatarBase64 != null) {
+                            try {
+                                Bitmap avatarBitmap = base64ToBitmap(avatarBase64);
+                                userAvatarImg.setImageBitmap(avatarBitmap);
+                            } catch (IllegalArgumentException e) {
+                                e.printStackTrace();
+                                // Handle the case where the Base64 string could not be decoded
+                            }
+                        }
+                        // Retrieve and set other user data
+                        String name = dataSnapshot.child("name").getValue(String.class);
+
+                        String dob = "";
+                        DataSnapshot dobSnapshot = dataSnapshot.child("dob").child("time");
+                        if (dobSnapshot.exists()) {
+                            long dobTimestamp = dobSnapshot.getValue(Long.class);
+                            if (dobTimestamp != 0) {
+                                com.google.firebase.Timestamp dobTs = new com.google.firebase.Timestamp(dobTimestamp, 0);
+                                dob = new SimpleDateFormat("dd/MM/yyyy").format(dobTs.toDate());
+                            }
+                        }
 
 
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle database error
+                }
+            });
+        }
+    }
+    public Bitmap base64ToBitmap(String base64Str) throws IllegalArgumentException {
+        byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
+        return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+    }
     private  void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getParentFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
