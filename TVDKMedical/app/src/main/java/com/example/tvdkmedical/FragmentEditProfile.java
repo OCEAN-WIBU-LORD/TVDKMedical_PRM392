@@ -110,7 +110,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
         returnBtn = view.findViewById(R.id.returnCardView);
         dobText = view.findViewById(R.id.dobText);
         userAvatarImg = view.findViewById(R.id.userAvatarImg);
-//        genderText = view.findViewById(R.id.genderText);
+        genderText = view.findViewById(R.id.genderText);
         addressText = view.findViewById(R.id.addressText);
         editName = view.findViewById(R.id.editName);
         editPhone = view.findViewById(R.id.phoneNumber);
@@ -126,7 +126,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
 
             openImagePicker();
         });
-//        genderText.setOnClickListener(this::showGenderPicker);
+        genderText.setOnClickListener(this::showGenderPicker);
 
         saveBtn.setOnClickListener(v -> {
             if(editName == null){
@@ -271,18 +271,18 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
         dobText.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
     }
 
-//    private void showGenderPicker(View view) {
-//        final String[] genderOptions = {"Male", "Female", "Other"};
-//        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//        builder.setTitle("Select Gender")
-//                .setItems(genderOptions, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        genderText.setText(genderOptions[which]);
-//                    }
-//                });
-//        builder.create().show();
-//    }
+    private void showGenderPicker(View view) {
+        final String[] genderOptions = {"Male", "Female", "Other"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Select Gender")
+                .setItems(genderOptions, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        genderText.setText(genderOptions[which]);
+                    }
+                });
+        builder.create().show();
+    }
 
 //    private void replaceFragment(Fragment fragment) {
 //        FragmentManager fragmentManager = getParentFragmentManager();
@@ -311,6 +311,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
     private void saveUserData() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
+            Toast.makeText(getActivity(), "User not authenticated", Toast.LENGTH_SHORT).show();
             return; // Handle the case where the user is not authenticated
         }
         progressBar.setVisibility(View.VISIBLE);
@@ -320,37 +321,55 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
         new UserResp().getUser(userId, new Callback<User>() {
             @Override
             public void onCallback(List<User> users) {
-                User updatedUser = users.get(0);
-                updatedUser.setName(editName.getText().toString().trim());
-                // dob
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                try {
-                    Timestamp dob = new Timestamp((sdf.parse(dobText.getText().toString().trim()).getTime()) / 1000);
-                    updatedUser.setDob(dob);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                updatedUser.setPhone(editPhone.getText().toString().trim());
+                if (users != null && !users.isEmpty()) {
+                    User updatedUser = users.get(0);
+                    updatedUser.setName(editName.getText().toString().trim());
 
-                // email
-                 updatedUser.setAddress(addressText.getText().toString().trim());
-                try {
-                    updatedUser.setIdCard(new JSONObject().put("id", cccdText.getText().toString().trim()));
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-                // healthCard
-
-                new UserResp().updateUser(updatedUser, new Callback<User>() {
-                    @Override
-                    public void onCallback(List<User> objects) {
-                        progressBar.setVisibility(View.GONE);
-//                        Toast.makeText(getActivity(), "Save Successful", Toast.LENGTH_SHORT).show();
+                    // Date of Birth
+                    @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    try {
+                        Timestamp dob = new Timestamp((sdf.parse(dobText.getText().toString().trim()).getTime()) / 1000);
+                        updatedUser.setDob(dob);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Invalid date format", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                });
+
+                    updatedUser.setPhone(editPhone.getText().toString().trim());
+                    updatedUser.setAddress(addressText.getText().toString().trim());
+                    updatedUser.setGender(genderText.getText().toString().trim());
+
+                    try {
+                        updatedUser.setIdCard(new JSONObject().put("id", cccdText.getText().toString().trim()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getActivity(), "Error setting ID card", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    // User Avatar
+                    Bitmap bitmap = ((BitmapDrawable) userAvatarImg.getDrawable()).getBitmap();
+                    String avatarBase64 = bitmapToBase64(bitmap);
+                    updatedUser.setUserAvatar(avatarBase64);
+
+
+                    // Save updated user data to Firebase
+                    new UserResp().updateUser(updatedUser, new Callback<User>() {
+                        @Override
+                        public void onCallback(List<User> objects) {
+                            progressBar.setVisibility(View.GONE);
+                        //    Toast.makeText(getActivity(), "Save Successful", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(getActivity(), "User not found", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
+
 
     public Bitmap base64ToBitmap(String base64Str) throws IllegalArgumentException {
         byte[] decodedBytes = Base64.decode(base64Str, Base64.DEFAULT);
@@ -366,7 +385,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        String avatarBase64 = dataSnapshot.child("avatarConverted").getValue(String.class);
+                        String avatarBase64 = dataSnapshot.child("userAvatar").getValue(String.class);
                         if (avatarBase64 != null) {
                             try {
                                 Bitmap avatarBitmap = base64ToBitmap(avatarBase64);
@@ -393,6 +412,7 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
 
                         String address = dataSnapshot.child("address").getValue(String.class);
                         String phone = dataSnapshot.child("phone").getValue(String.class);
+                        String gender = dataSnapshot.child("gender").getValue(String.class);
 
                         GenericTypeIndicator<HashMap<String, Object>> genericTypeIndicator = new GenericTypeIndicator<HashMap<String, Object>>() {};
                         HashMap<String, Object> cccd = dataSnapshot.child("idCard").getValue(genericTypeIndicator);
@@ -415,6 +435,9 @@ public class FragmentEditProfile extends Fragment implements DatePickerDialog.On
                         }
                         if (cccd != null) {
                             cccdText.setText(idCardNo);
+                        }
+                        if (gender != null) {
+                            genderText.setText(gender);
                         }
                     }
                 }
