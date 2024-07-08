@@ -197,7 +197,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     }
 
                                     // Create user
-                                    User newUser = new User(user.getUid(), name, email, null, null, null, null, null, "user");
+                                    User newUser = new User(user.getUid(), name, email, null, null, null, null, null, null, "user", null);
                                     // Save user to database
                                     new UserResp().createUser(newUser, new Callback<User>() {
                                         @Override
