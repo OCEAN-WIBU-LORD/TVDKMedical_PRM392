@@ -32,7 +32,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="600dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="100dp"
@@ -95,7 +95,7 @@
                         android:paddingLeft="20dp"
                         android:paddingRight="20dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        tools:layout_editor_absoluteY="192dp">
+                        tools:layout_editor_absoluteY="0dp">
 
 
                         <androidx.cardview.widget.CardView
@@ -174,11 +174,40 @@
                         </androidx.cardview.widget.CardView>
 
                         <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView17"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:minWidth="150dp"
+                            app:cardCornerRadius="25dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView12">
+
+
+                            <EditText
+                                android:id="@+id/genderText"
+                                android:layout_width="119dp"
+                                android:layout_height="wrap_content"
+                                android:background="@android:color/transparent"
+                                android:hint="Gender"
+                                android:clickable="true"
+                                android:focusable="false"
+                                android:padding="15sp"
+                                android:textSize="18sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintHorizontal_bias="1.0"
+                                app:layout_constraintStart_toEndOf="@+id/dobText"
+                                app:layout_constraintTop_toBottomOf="@+id/nameCard" />
+
+
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
                             android:id="@+id/cardProgressBar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:cardCornerRadius="25dp"
                             android:layout_marginTop="150dp"
+                            app:cardCornerRadius="25dp"
                             app:layout_constraintBottom_toTopOf="@+id/nameCard"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -257,14 +286,14 @@
                             android:id="@+id/cancelBtn"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="32dp"
-                            android:layout_marginEnd="28dp"
+                            android:layout_marginEnd="12dp"
+                            android:layout_marginBottom="48dp"
                             android:text="Cancel"
                             android:textColor="@color/red"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/cardView11"
-                            app:layout_constraintVertical_bias="0.111" />
+                            app:layout_constraintVertical_bias="1.0" />
 
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
