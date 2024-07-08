@@ -39,9 +39,10 @@ public class UserResp {
                 user.setName(snapshot.hasChild("name") ? snapshot.child("name").getValue().toString() : "");
                 user.setEmail(snapshot.hasChild("email") ? snapshot.child("email").getValue().toString() : "");
                 user.setPhone(snapshot.hasChild("phone") ? snapshot.child("phone").getValue().toString() : "");
+                user.setPhone(snapshot.hasChild("gender") ? snapshot.child("gender").getValue().toString() : "");
                 user.setAddress(snapshot.hasChild("address") ? snapshot.child("address").getValue().toString() : "");
                 user.setRole(snapshot.hasChild("role") ? snapshot.child("role").getValue().toString() : "");
-
+                user.setUserAvatar(snapshot.hasChild("userAvatar") ? snapshot.child("userAvatar").getValue().toString() : "");
                 String healthCard = snapshot.hasChild("healthCard") && snapshot.child("healthCard").getValue() != null ? snapshot.child("healthCard").getValue().toString() : "null";
                 if (!"null".equals(healthCard)) {
                     try {
@@ -174,12 +175,14 @@ public class UserResp {
                 user.getUserId(),
                 user.getName(),
                 user.getEmail(),
+                user.getGender(),
                 user.getDob(),
                 user.getAddress(),
                 user.getPhone(),
                 idCard,
                 map,
-                user.getRole());
+                user.getRole(),
+                user.getUserAvatar());
         databaseReference.child("users").child(user.getUserId()).setValue(updatedUser).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
