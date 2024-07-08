@@ -33,7 +33,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvProfile"
                 android:layout_width="match_parent"
-                android:layout_height="170dp"
+                android:layout_height="180dp"
                 android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="100dp"
@@ -80,6 +80,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
+                            android:id="@+id/userAvatarImg"
                             android:layout_width="135dp"
                             android:layout_height="135dp"
                             android:scaleType="centerCrop"
@@ -101,16 +102,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvDob"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="18dp"-->
-<!--                        android:layout_marginTop="16dp"-->
-<!--                        android:textFontWeight="700"-->
-<!--                        android:textSize="18dp"-->
-<!--                        app:layout_constraintStart_toEndOf="@+id/cardView"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvName" />-->
 
                     <TextView
                         android:id="@+id/tvPhone"
@@ -122,6 +113,19 @@
                         android:textSize="18dp"
                         app:layout_constraintStart_toEndOf="@+id/cardView"
                         app:layout_constraintTop_toBottomOf="@+id/tvName" />
+
+                    <TextView
+                        android:id="@+id/tvDob"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="-90dp"
+                        android:textFontWeight="700"
+                        android:textSize="18dp"
+                        android:layout_marginTop="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/cardView991"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPhone" />
 
                     <androidx.cardview.widget.CardView
                         android:id="@+id/cardView"
@@ -145,27 +149,27 @@
                             app:srcCompat="@drawable/phone_call" />
                     </androidx.cardview.widget.CardView>
 
-<!--                    <androidx.cardview.widget.CardView-->
-<!--                        android:id="@+id/cardView1"-->
-<!--                        android:layout_width="35dp"-->
-<!--                        android:layout_height="35dp"-->
-<!--                        android:layout_gravity="center"-->
-<!--                        android:layout_marginStart="180dp"-->
-<!--                        android:layout_marginTop="115dp"-->
-<!--                        app:cardBackgroundColor="@color/lowLightBlue"-->
-<!--                        app:cardCornerRadius="10dp"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent">-->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardView991"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="20dp"
+                        app:cardBackgroundColor="@color/lowLightBlue"
+                        app:cardCornerRadius="10dp"
+                        app:layout_constraintStart_toEndOf="@+id/cardView6"
+                        app:layout_constraintTop_toBottomOf="@+id/cardView">
 
-<!--                        <ImageView-->
-<!--                            android:id="@+id/imageView7"-->
-<!--                            android:layout_width="26dp"-->
-<!--                            android:layout_height="26dp"-->
-<!--                            android:layout_gravity="center"-->
-<!--                            app:layout_constraintStart_toEndOf="@+id/cardView6"-->
-<!--                            app:layout_constraintTop_toBottomOf="@+id/textView22"-->
-<!--                            app:srcCompat="@drawable/phone_call" />-->
-<!--                    </androidx.cardview.widget.CardView>-->
+                        <ImageView
+                            android:id="@+id/imageView7"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            app:layout_constraintStart_toEndOf="@+id/cardView6"
+                            app:layout_constraintTop_toBottomOf="@+id/textView22"
+                            app:srcCompat="@drawable/baseline_calendar_month_24" />
+                    </androidx.cardview.widget.CardView>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
 
