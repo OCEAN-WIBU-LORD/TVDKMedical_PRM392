@@ -9,6 +9,8 @@ public class UpdatedUser {
     private String userId;
     private String name;
     private String email;
+
+    private String gender;
     private Timestamp dob;
     private String address;
     private String phone;
@@ -16,19 +18,23 @@ public class UpdatedUser {
     private Map<String, Object> healthCard;
     private String role;
 
+    private String userAvatar;
+
     public UpdatedUser() {
     }
 
-    public UpdatedUser(String userId, String name, String email, Timestamp dob, String address, String phone, Map<String, Object> idCard, Map<String, Object> healthCard, String role) {
+    public UpdatedUser(String userId, String name, String email,String gender, Timestamp dob, String address, String phone, Map<String, Object> idCard, Map<String, Object> healthCard, String role, String userAvatar) {
         this.userId = userId;
         this.name = name;
         this.email = email;
+        this.gender = gender;
         this.dob = dob;
         this.address = address;
         this.phone = phone;
         this.idCard = idCard;
         this.healthCard = healthCard;
         this.role = role;
+        this.userAvatar = userAvatar;
     }
 
     public String getUserId() {
@@ -105,5 +111,21 @@ public class UpdatedUser {
 
     public boolean isDoctor() {
         return role.equals("doctor");
+    }
+
+    public String getUserAvatar() {
+        return userAvatar;
+    }
+
+    public void setUserAvatar(String userAvatar) {
+        this.userAvatar = userAvatar;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }
