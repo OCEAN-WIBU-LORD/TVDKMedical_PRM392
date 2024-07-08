@@ -94,6 +94,16 @@ public class DoctorAppointmentAdapter extends RecyclerView.Adapter<DoctorAppoint
         private void bindingAction() {
             btnReschedule.setOnClickListener(this::onbtnRescheduleClick);
             btnCancel.setOnClickListener(this::onbtnCancelClick);
+            itemView.setOnClickListener(this::onItemViewClick);
+
+        }
+
+        private void onItemViewClick(View view) {
+            Appointment appointment = appointments.get(getAdapterPosition());
+
+            Intent intent = new Intent(context, AppointmentDetailsActivity.class);
+            intent.putExtra("appointmentId", appointment.getAppointmentId());
+            context.startActivity(intent);
         }
 
         private void onbtnCancelClick(View view) {
